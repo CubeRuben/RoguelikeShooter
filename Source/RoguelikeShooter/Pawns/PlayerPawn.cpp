@@ -1,6 +1,7 @@
 #include "PlayerPawn.h"
 
 #include "Components/PlayerMovementComponent.h"
+#include "Components/PlayerHealthComponent.h"
 
 #include <Components/CapsuleComponent.h>
 #include <Camera/CameraComponent.h>
@@ -22,6 +23,7 @@ APlayerPawn::APlayerPawn()
 	PlayerCamera->AddLocalOffset(FVector(0.0f, 0.0f, 65.0f));
 
 	MovementComponent = CreateDefaultSubobject<UPlayerMovementComponent>(TEXT("Movement Component"));
+	HealthComponent = CreateDefaultSubobject<UPlayerHealthComponent>(TEXT("Health Component"));
 }
 
 void APlayerPawn::BeginPlay()

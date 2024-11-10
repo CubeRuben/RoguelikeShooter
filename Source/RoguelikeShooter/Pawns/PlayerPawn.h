@@ -40,6 +40,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UPlayerMovementComponent* MovementComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UPlayerHealthComponent* HealthComponent;
+
 	FPlayerInput PlayerInput;
 
 	virtual void BeginPlay() override;
