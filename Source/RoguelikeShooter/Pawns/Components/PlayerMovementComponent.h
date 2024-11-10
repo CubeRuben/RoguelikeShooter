@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/MovementComponent.h"
+#include "MovementStates/StateEnum.h"
 #include "PlayerMovementComponent.generated.h"
 
 USTRUCT(BlueprintType)
@@ -14,6 +15,7 @@ public:
 	FMovementAttributes() 
 	{
 		Acceleration = 15.0f;
+		StoppingAcceleration = 25.0f;
 		MaxWalkingSpeed = 350.0f;
 		MaxRunningSpeed = 650.0f;
 		JumpForce = 500.0f;
@@ -22,6 +24,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Acceleration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float StoppingAcceleration;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float MaxWalkingSpeed;
@@ -49,26 +54,26 @@ protected:
 
 	class APlayerPawn* PlayerPawn;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	//FVector MovementVelocity;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	EMovementState CurrentMovementStateType;
 
+	class SBaseState* CurrentMovementState;
+	TMap<EMovementState, class SBaseState*> StatesMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FMovementAttributes MovementAttributes;
+
+	// Replication
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	FVector ReplicatedLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	float ReplicatedPawnRotation;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsInAir;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FMovementAttributes MovementAttributes;
-
 	void BeginPlay() override;
-
-	FVector GetMovementInput();
-	float GetTargetSpeed();
 		
+	void AddStateToMap(class SBaseState* NewState);
+
 	void HandleInput(float DeltaTime);
 
 	void LocalPlayerTick(float DeltaTime);
@@ -78,9 +83,22 @@ protected:
 
 public:
 	
+	class APlayerPawn* GetPlayerPawn() const { return PlayerPawn; }
+	const FMovementAttributes& GetMovementAttributes() const { return MovementAttributes; }
+
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	FVector GetMovementInput();
+	float GetTargetSpeed();
+
+	void SwitchToState(EMovementState NewState);
+
+	bool CanStayOnSurface(FVector Normal);
+
+	void SweepGround(float Height, FHitResult& OutHit);
 
 	UFUNCTION(Server, Unreliable)
 	void ReplicateMovement_ServerRPC(FVector Location, float PawnRotation);
 	void ReplicateMovement_ServerRPC_Implementation(FVector Location, float PawnRotation);
+
 };

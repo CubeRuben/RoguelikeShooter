@@ -1,14 +1,20 @@
 #include "PlayerMovementComponent.h"
 
 #include "../PlayerPawn.h"
+#include "MovementStates/BaseState.h"
 
+#include <Components/CapsuleComponent.h>
 #include <Camera/CameraComponent.h>
 #include <Net/UnrealNetwork.h>
 
 UPlayerMovementComponent::UPlayerMovementComponent()
 {
-	bIsInAir = false;
+	AddStateToMap(new SIdleState(this));
+	AddStateToMap(new SWalkState(this));
+	AddStateToMap(new SInAirState(this));
 	
+	SwitchToState(EMovementState::Idle);
+
 	SetIsReplicated(true);
 }
 
@@ -20,6 +26,14 @@ void UPlayerMovementComponent::BeginPlay()
 
 	if (!PlayerPawn)
 		DestroyComponent();
+}
+
+void UPlayerMovementComponent::AddStateToMap(SBaseState* NewState)
+{
+	if (!NewState)
+		return;
+
+	StatesMap.Add(NewState->GetStateType(), NewState);
 }
 
 void UPlayerMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -39,6 +53,13 @@ void UPlayerMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 void UPlayerMovementComponent::LocalPlayerTick(float DeltaTime)
 {
 	HandleInput(DeltaTime);
+
+	if (CurrentMovementState) 
+	{
+		CurrentMovementState->Tick(DeltaTime);
+	}
+
+	/*
 
 	const FVector startLocation = PlayerPawn->GetActorLocation();
 
@@ -78,7 +99,7 @@ void UPlayerMovementComponent::LocalPlayerTick(float DeltaTime)
 		bIsInAir = true;
 	}
 
-	Velocity = (PlayerPawn->GetActorLocation() - startLocation) / DeltaTime;
+	Velocity = (PlayerPawn->GetActorLocation() - startLocation) / DeltaTime;*/
 }
 
 void UPlayerMovementComponent::ReplicatedPlayerTick(float DeltaTime)
@@ -93,6 +114,54 @@ void UPlayerMovementComponent::ReplicatedPlayerTick(float DeltaTime)
 	PlayerPawn->SetActorRotation(newRotation);
 }
 
+void UPlayerMovementComponent::SwitchToState(EMovementState NewState)
+{
+	if (CurrentMovementStateType == NewState && CurrentMovementState)
+		return;
+
+	if (CurrentMovementState) 
+	{
+		CurrentMovementState->OnStateExit();
+		CurrentMovementState = nullptr;
+	}
+
+	SBaseState** state = StatesMap.Find(NewState);
+
+	if (!state)
+		return;
+
+	CurrentMovementStateType = NewState;
+	CurrentMovementState = *state;
+	CurrentMovementState->OnStateEnter();
+}
+
+bool UPlayerMovementComponent::CanStayOnSurface(FVector Normal)
+{
+	const float slopeAngle = FMath::RadiansToDegrees(FMath::Acos(Normal.Z));
+	return slopeAngle < MovementAttributes.SlopeAngle;
+}
+
+void UPlayerMovementComponent::SweepGround(float Height, FHitResult& OutHit)
+{
+	UCapsuleComponent* collider = PlayerPawn->GetCapsuleComponent();
+
+	if (!collider)
+		return;
+
+	const float capsuleHeight = collider->GetScaledCapsuleHalfHeight(), capsuleRadius = collider->GetScaledCapsuleRadius();
+	const float heightScale = 0.95f;
+	const float heightDelta = capsuleHeight * (1.f - heightScale);
+	FCollisionShape customCollisionShape = FCollisionShape::MakeCapsule(capsuleRadius, capsuleHeight - heightDelta);
+
+	const FVector componentLocation = collider->GetComponentLocation();
+	const FVector endLocation = componentLocation + FVector(0.f, 0.f, -Height - heightDelta);
+
+	FCollisionQueryParams collisionParams;
+	collisionParams.AddIgnoredActor(PlayerPawn);
+
+	GetWorld()->SweepSingleByProfile(OutHit, componentLocation, endLocation, FQuat::Identity, collider->GetCollisionProfileName(), customCollisionShape, collisionParams);
+}
+
 void UPlayerMovementComponent::HandleInput(float DeltaTime)
 {
 	FPlayerInput& playerInput = PlayerPawn->GetPlayerInput();
@@ -105,20 +174,6 @@ void UPlayerMovementComponent::HandleInput(float DeltaTime)
 	playerCamera->SetRelativeRotation(FRotator(clampedAngle, 0.0f, 0.0f));
 
 	PlayerPawn->AddActorLocalRotation(FRotator(0.0f, playerInput.MouseX * sensitivity, 0.0f));
-
-	const FVector targetVelocity = GetMovementInput() * GetTargetSpeed();
-	const FVector projectedVelocity(Velocity.X, Velocity.Y, 0.0f);
-	const FVector deltaVelocity = (targetVelocity - projectedVelocity) * MovementAttributes.Acceleration * DeltaTime;
-	
-	Velocity += deltaVelocity;
-
-	if (playerInput.bJump)
-	{
-		playerInput.bJump = false;
-
-		if (!bIsInAir)
-			Velocity += FVector(0.0f, 0.0f, MovementAttributes.JumpForce);
-	}
 }
 
 FVector UPlayerMovementComponent::GetMovementInput()
