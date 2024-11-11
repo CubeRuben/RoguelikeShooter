@@ -189,5 +189,10 @@ void SInAirState::Tick(float DeltaTime)
 		return;
 	}
 
+	FVector normal = moveHit.ImpactNormal;
+	normal.Z;
+	normal.Normalize();
+	MovementComponent->Velocity = FVector::VectorPlaneProject(MovementComponent->Velocity, normal);
+
 	MovementComponent->SlideAlongSurface(movementDelta, 1.0f - moveHit.Time, moveHit.ImpactNormal, moveHit);
 }
