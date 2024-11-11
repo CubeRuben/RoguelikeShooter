@@ -16,5 +16,9 @@ class ROGUELIKESHOOTER_API IInteractable
 
 public:
 
+	virtual void Interact(class APlayerPawn* Pawn) = 0;
+
+	virtual void StartHovering() {}
+	virtual void StopHovering() {}
 	
 };

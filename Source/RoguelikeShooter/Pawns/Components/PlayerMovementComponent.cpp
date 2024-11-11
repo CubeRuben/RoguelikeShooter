@@ -17,6 +17,8 @@ UPlayerMovementComponent::UPlayerMovementComponent()
 	SwitchToState(EMovementState::Idle);
 
 	SetIsReplicated(true);
+
+	PlayerPawn = nullptr;
 }
 
 void UPlayerMovementComponent::BeginPlay()

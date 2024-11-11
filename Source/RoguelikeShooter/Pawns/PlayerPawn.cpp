@@ -2,6 +2,7 @@
 
 #include "Components/PlayerMovementComponent.h"
 #include "Components/PlayerHealthComponent.h"
+#include "Components/PlayerInteractionComponent.h"
 
 #include <Components/CapsuleComponent.h>
 #include <Camera/CameraComponent.h>
@@ -15,6 +16,7 @@ APlayerPawn::APlayerPawn()
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Component"));
 	CapsuleComponent->InitCapsuleSize(25.0f, 75.0f);
 	CapsuleComponent->SetCollisionProfileName("BlockAll");
+	CapsuleComponent->BodyInstance.bNotifyRigidBodyCollision = true;
 	CapsuleComponent->SetHiddenInGame(false);
 	RootComponent = CapsuleComponent;
 
@@ -24,6 +26,7 @@ APlayerPawn::APlayerPawn()
 
 	MovementComponent = CreateDefaultSubobject<UPlayerMovementComponent>(TEXT("Movement Component"));
 	HealthComponent = CreateDefaultSubobject<UPlayerHealthComponent>(TEXT("Health Component"));
+	InteractionComponent = CreateDefaultSubobject<UPlayerInteractionComponent>(TEXT("Interaction Component"));
 }
 
 void APlayerPawn::BeginPlay()
@@ -56,6 +59,8 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	INPUT_BIND(MoveLeft);
 	INPUT_BIND(MoveBack);
 	INPUT_BIND(MoveRight);
+
+	INPUT_BIND(Interact);
 
 	INPUT_BIND(Run);
 	INPUT_BIND(Jump);

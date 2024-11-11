@@ -16,6 +16,8 @@ struct FPlayerInput
 	bool bRun = false;
 	bool bJump = false;
 
+	bool bInteract = false;
+
 	float MouseX = 0.0f;
 	float MouseY = 0.0f;
 };
@@ -43,6 +45,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UPlayerHealthComponent* HealthComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UPlayerInteractionComponent* InteractionComponent;
+
 	FPlayerInput PlayerInput;
 
 	virtual void BeginPlay() override;
@@ -51,6 +56,10 @@ public:
 
 	class UCapsuleComponent* GetCapsuleComponent() const { return CapsuleComponent; }
 	class UCameraComponent* GetCameraComponent() const { return PlayerCamera; }
+
+	class UPlayerMovementComponent* GetPlayerMovementComponent() const { return MovementComponent; }
+	class UPlayerHealthComponent* GetPlayerHealthComponent() const { return HealthComponent; }
+	class UPlayerInteractionComponent* GetPlayerInteractionComponent() const { return InteractionComponent; }
 
 	FPlayerInput& GetPlayerInput() { return PlayerInput; }
 
@@ -64,6 +73,8 @@ public:
 	INPUT_HANDLE(MoveLeft);
 	INPUT_HANDLE(MoveBack);
 	INPUT_HANDLE(MoveRight);
+
+	INPUT_HANDLE(Interact);
 
 	INPUT_HANDLE(Run);
 	INPUT_HANDLE(Jump);
