@@ -95,6 +95,8 @@ public:
 
 	bool CanStayOnSurface(FVector Normal);
 
+	void Jump();
+
 	void SweepGround(float Height, FHitResult& OutHit);
 
 	UFUNCTION(Server, Unreliable)

@@ -11,6 +11,7 @@ UPlayerMovementComponent::UPlayerMovementComponent()
 {
 	AddStateToMap(new SIdleState(this));
 	AddStateToMap(new SWalkState(this));
+	AddStateToMap(new SRunState(this));
 	AddStateToMap(new SInAirState(this));
 	
 	SwitchToState(EMovementState::Idle);
@@ -141,6 +142,11 @@ bool UPlayerMovementComponent::CanStayOnSurface(FVector Normal)
 	return slopeAngle < MovementAttributes.SlopeAngle;
 }
 
+void UPlayerMovementComponent::Jump()
+{
+	Velocity += FVector(0.0f, 0.0f, MovementAttributes.JumpForce);
+}
+
 void UPlayerMovementComponent::SweepGround(float Height, FHitResult& OutHit)
 {
 	UCapsuleComponent* collider = PlayerPawn->GetCapsuleComponent();
@@ -194,19 +200,6 @@ FVector UPlayerMovementComponent::GetMovementInput()
 		movementInput -= PlayerPawn->GetActorRightVector();
 	
 	return movementInput.GetSafeNormal2D();
-}
-
-float UPlayerMovementComponent::GetTargetSpeed()
-{
-	FPlayerInput& playerInput = PlayerPawn->GetPlayerInput();
-
-	if (!(playerInput.bMoveForward || playerInput.bMoveBack || playerInput.bMoveLeft || playerInput.bMoveRight))
-		return 0.0f;
-	
-	if (playerInput.bRun)
-		return MovementAttributes.MaxRunningSpeed;
-
-	return MovementAttributes.MaxWalkingSpeed;
 }
 
 void UPlayerMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
