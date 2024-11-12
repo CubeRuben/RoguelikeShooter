@@ -17,7 +17,8 @@ void SBaseGroundedState::OnStateEnter()
 
 void SBaseGroundedState::Tick(float DeltaTime)
 {
-	UpdateInput();
+	if (UpdateInput())
+		return;
 
 	UpdateVelocity(DeltaTime);
 
@@ -48,7 +49,7 @@ void SBaseGroundedState::Tick(float DeltaTime)
 
 SIdleState::SIdleState(UPlayerMovementComponent* NewMovementComponent) : SBaseGroundedState(NewMovementComponent) {}
 
-void SIdleState::UpdateInput()
+bool SIdleState::UpdateInput()
 {
 	FPlayerInput& playerInput = MovementComponent->GetPlayerPawn()->GetPlayerInput();
 
@@ -57,7 +58,7 @@ void SIdleState::UpdateInput()
 		playerInput.bJump = false;
 		MovementComponent->Jump();
 		MovementComponent->SwitchToState(EMovementState::InAir);
-		return;
+		return true;
 	}
 
 	if (playerInput.bMoveForward || playerInput.bMoveBack || playerInput.bMoveRight || playerInput.bMoveLeft)
@@ -70,8 +71,10 @@ void SIdleState::UpdateInput()
 		{
 			MovementComponent->SwitchToState(EMovementState::Walk);
 		}
-		return;
+		return true;
 	}
+
+	return false;
 }
 
 void SIdleState::UpdateVelocity(float DeltaTime)
@@ -93,7 +96,7 @@ void SIdleState::UpdateVelocity(float DeltaTime)
 
 SWalkState::SWalkState(UPlayerMovementComponent* NewMovementComponent) : SBaseGroundedState(NewMovementComponent) {}
 
-void SWalkState::UpdateInput()
+bool SWalkState::UpdateInput()
 {
 	FPlayerInput& playerInput = MovementComponent->GetPlayerPawn()->GetPlayerInput();
 
@@ -102,20 +105,22 @@ void SWalkState::UpdateInput()
 		playerInput.bJump = false;
 		MovementComponent->Jump();
 		MovementComponent->SwitchToState(EMovementState::InAir);
-		return;
+		return true;
 	}
 
 	if (!(playerInput.bMoveForward || playerInput.bMoveBack || playerInput.bMoveRight || playerInput.bMoveLeft))
 	{
 		MovementComponent->SwitchToState(EMovementState::Idle);
-		return;
+		return true;
 	}
 
 	if (playerInput.bRun && playerInput.bMoveForward && !playerInput.bMoveBack && !playerInput.bMoveRight && !playerInput.bMoveLeft)
 	{
 		MovementComponent->SwitchToState(EMovementState::Run);
-		return;
+		return true;
 	}
+
+	return false;
 }
 
 void SWalkState::UpdateVelocity(float DeltaTime)
@@ -134,7 +139,7 @@ float SWalkState::GetTargetSpeed()
 
 SRunState::SRunState(UPlayerMovementComponent* NewMovementComponent) : SWalkState(NewMovementComponent) {}
 
-void SRunState::UpdateInput()
+bool SRunState::UpdateInput()
 {
 	FPlayerInput& playerInput = MovementComponent->GetPlayerPawn()->GetPlayerInput();
 
@@ -144,14 +149,16 @@ void SRunState::UpdateInput()
 		playerInput.bJump = false;
 		MovementComponent->Jump();
 		MovementComponent->SwitchToState(EMovementState::InAir);
-		return;
+		return true;
 	}
 
 	if (!(playerInput.bMoveForward && playerInput.bRun) || playerInput.bMoveBack || playerInput.bMoveRight || playerInput.bMoveLeft)
 	{
 		MovementComponent->SwitchToState(EMovementState::Idle);
-		return;
+		return true;
 	}
+
+	return false;
 }
 
 float SRunState::GetTargetSpeed()

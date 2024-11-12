@@ -32,7 +32,7 @@ public:
 
     void Tick(float DeltaTime) override;
 
-    virtual void UpdateInput() = 0;
+    virtual bool UpdateInput() = 0;
     virtual void UpdateVelocity(float DeltaTime) = 0;
 };
 
@@ -45,7 +45,7 @@ public:
 
     EMovementState GetStateType() const override { return EMovementState::Idle; }
 
-    void UpdateInput() override;
+    bool UpdateInput() override;
     void UpdateVelocity(float DeltaTime) override;
 };
 
@@ -57,7 +57,7 @@ public:
 
     EMovementState GetStateType() const override { return EMovementState::Walk; }
 
-    void UpdateInput() override;
+    bool UpdateInput() override;
     void UpdateVelocity(float DeltaTime) override;
 
     virtual float GetTargetSpeed();
@@ -71,7 +71,7 @@ public:
 
     EMovementState GetStateType() const override { return EMovementState::Run; }
 
-    void UpdateInput() override;
+    bool UpdateInput() override;
 
     virtual float GetTargetSpeed() override;
 };

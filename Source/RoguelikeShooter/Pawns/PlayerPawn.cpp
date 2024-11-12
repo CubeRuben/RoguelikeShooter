@@ -5,6 +5,7 @@
 #include "Components/PlayerInteractionComponent.h"
 
 #include <Components/CapsuleComponent.h>
+#include <Components/SkeletalMeshComponent.h>
 #include <Camera/CameraComponent.h>
 
 APlayerPawn::APlayerPawn()
@@ -23,6 +24,9 @@ APlayerPawn::APlayerPawn()
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera Component"));
 	PlayerCamera->SetupAttachment(CapsuleComponent);
 	PlayerCamera->AddLocalOffset(FVector(0.0f, 0.0f, 65.0f));
+
+	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Player Skeletal Mesh Component"));
+	SkeletalMeshComponent->SetupAttachment(CapsuleComponent);
 
 	MovementComponent = CreateDefaultSubobject<UPlayerMovementComponent>(TEXT("Movement Component"));
 	HealthComponent = CreateDefaultSubobject<UPlayerHealthComponent>(TEXT("Health Component"));
