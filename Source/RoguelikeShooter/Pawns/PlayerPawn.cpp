@@ -3,6 +3,7 @@
 #include "Components/PlayerMovementComponent.h"
 #include "Components/PlayerHealthComponent.h"
 #include "Components/PlayerInteractionComponent.h"
+#include "Components/PlayerCombatComponent.h"
 
 #include <Components/CapsuleComponent.h>
 #include <Components/SkeletalMeshComponent.h>
@@ -31,6 +32,7 @@ APlayerPawn::APlayerPawn()
 	MovementComponent = CreateDefaultSubobject<UPlayerMovementComponent>(TEXT("Movement Component"));
 	HealthComponent = CreateDefaultSubobject<UPlayerHealthComponent>(TEXT("Health Component"));
 	InteractionComponent = CreateDefaultSubobject<UPlayerInteractionComponent>(TEXT("Interaction Component"));
+	CombatComponent = CreateDefaultSubobject<UPlayerCombatComponent>(TEXT("Combat Component"));
 }
 
 void APlayerPawn::BeginPlay()
@@ -68,5 +70,9 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	INPUT_BIND(Run);
 	INPUT_BIND(Jump);
+
+	INPUT_BIND(FireWeapon);
+	INPUT_BIND(AlternativeWeaponAction);
+	INPUT_BIND(SwitchFireMode);
 }
 

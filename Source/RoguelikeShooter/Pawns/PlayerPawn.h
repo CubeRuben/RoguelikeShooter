@@ -18,6 +18,10 @@ struct FPlayerInput
 
 	bool bInteract = false;
 
+	bool bFireWeapon = false;
+	bool bAlternativeWeaponAction = false;
+	bool bSwitchFireMode = false;
+
 	float MouseX = 0.0f;
 	float MouseY = 0.0f;
 };
@@ -51,6 +55,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UPlayerInteractionComponent* InteractionComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UPlayerCombatComponent* CombatComponent;
+
 	FPlayerInput PlayerInput;
 
 	virtual void BeginPlay() override;
@@ -81,6 +88,10 @@ public:
 
 	INPUT_HANDLE(Run);
 	INPUT_HANDLE(Jump);
+
+	INPUT_HANDLE(FireWeapon);
+	INPUT_HANDLE(AlternativeWeaponAction);
+	INPUT_HANDLE(SwitchFireMode);
 
 	void InputMouseXAxis(float Value) { PlayerInput.MouseX = Value; };
 	void InputMouseYAxis(float Value) { PlayerInput.MouseY = Value; };
