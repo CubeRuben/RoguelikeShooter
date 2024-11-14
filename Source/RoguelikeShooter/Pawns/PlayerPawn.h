@@ -70,6 +70,7 @@ public:
 	class UPlayerMovementComponent* GetPlayerMovementComponent() const { return MovementComponent; }
 	class UPlayerHealthComponent* GetPlayerHealthComponent() const { return HealthComponent; }
 	class UPlayerInteractionComponent* GetPlayerInteractionComponent() const { return InteractionComponent; }
+	class UPlayerCombatComponent* GetPlayerCombatComponent() const { return CombatComponent; }
 
 	FPlayerInput& GetPlayerInput() { return PlayerInput; }
 

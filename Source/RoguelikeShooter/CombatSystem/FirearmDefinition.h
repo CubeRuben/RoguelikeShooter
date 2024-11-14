@@ -7,6 +7,8 @@
 USTRUCT()
 struct FRandomFloatProperty
 {
+	GENERATED_BODY()
+
 public:
 
 	FRandomFloatProperty();
@@ -43,13 +45,18 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FRandomFloatProperty FireRate;
 
+	UPROPERTY(EditAnywhere)
+	class UStaticMesh* FirearmMesh;
+
 	UPROPERTY(EditAnywhere, Instanced)
 	TArray<class UFirearmBaseFire*> OnFireBehaviour;
 
 public:
 
-	float GetDamage() { return Damage.GetRandomValue(); }
-	float GetFireRate() { return FireRate.GetRandomValue(); }
+	float GetDamage() const { return Damage.GetRandomValue(); }
+	float GetFireRate() const { return FireRate.GetRandomValue(); }
 	
+	class UStaticMesh* GetFirearmMesh() const { return FirearmMesh; }
+
 	void OnFire(class UFirearm* Firearm);
 };

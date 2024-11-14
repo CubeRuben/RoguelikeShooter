@@ -33,4 +33,7 @@ public:
 
 	class UFirearm* GetCurrentFirearm();
 	
+	void AddFirearm(class UFirearm* NewFirearm);
+
+	void SetCurrentFirearm(int Index);
 };

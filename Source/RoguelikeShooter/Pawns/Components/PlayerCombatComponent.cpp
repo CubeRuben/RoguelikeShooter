@@ -24,6 +24,8 @@ void UPlayerCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	HandleInput();
+
 }
 
 void UPlayerCombatComponent::HandleInput()
@@ -65,4 +67,21 @@ UFirearm* UPlayerCombatComponent::GetCurrentFirearm()
 		return HeldFirearms[CurrentFirearmIndex];
 
 	return nullptr;
+}
+
+void UPlayerCombatComponent::AddFirearm(UFirearm* NewFirearm)
+{
+	if (!NewFirearm)
+		return;
+
+	const int index = HeldFirearms.Add(NewFirearm);
+	SetCurrentFirearm(index);
+}
+
+void UPlayerCombatComponent::SetCurrentFirearm(int Index)
+{
+	if (!HeldFirearms.IsValidIndex(CurrentFirearmIndex))
+		return;
+
+	CurrentFirearmIndex = Index;
 }

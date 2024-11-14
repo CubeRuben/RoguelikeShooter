@@ -4,7 +4,7 @@
 #include "../ExtendedEngine/NetworkObject.h"
 #include "Firearm.generated.h"
 
-UCLASS()
+UCLASS(EditInlineNew)
 class ROGUELIKESHOOTER_API UFirearm : public UNetworkObject
 {
 	GENERATED_BODY()
@@ -18,20 +18,32 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TWeakObjectPtr<class APlayerPawn> OwnerPlayerPawn;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UFirearmDefinition* FirearmDefinition;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float FireRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsAutoFireMode;
+
+	void InitFirearm();
 
 public:
 
-	void Fire();
+	void SetOwnerPlayerPawn(class APlayerPawn* NewOwnerPlayerPawn);
+	class APlayerPawn* GetOwnerPlayerPawn() const;
+
+	void SetFirearmDefinition(class UFirearmDefinition* NewFirearmDefinition);
+	class UFirearmDefinition* GetFirearmDefinition() const { return FirearmDefinition; }
+
+	bool Fire();
 	void AlternativeAction();
 
 	bool GetIsAutoFireMode() const { return bIsAutoFireMode; }
 	void SetIsAutoFireMode(bool newMode) { bIsAutoFireMode = newMode; }
 	void SwitchFireMode() { bIsAutoFireMode = !bIsAutoFireMode; }
-	
-
 };
