@@ -4,7 +4,7 @@
 #include "UObject/NoExportTypes.h"
 #include "FirearmBaseFire.generated.h"
 
-UCLASS()
+UCLASS(EditInlineNew)
 class ROGUELIKESHOOTER_API UFirearmBaseFire : public UObject
 {
 	GENERATED_BODY()

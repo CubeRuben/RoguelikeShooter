@@ -75,6 +75,7 @@ void UPlayerCombatComponent::AddFirearm(UFirearm* NewFirearm)
 		return;
 
 	const int index = HeldFirearms.Add(NewFirearm);
+	NewFirearm->SetOwnerPlayerPawn(PlayerPawn);
 	SetCurrentFirearm(index);
 }
 

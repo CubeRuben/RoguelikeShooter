@@ -40,6 +40,9 @@ public:
 	void SetFirearmDefinition(class UFirearmDefinition* NewFirearmDefinition);
 	class UFirearmDefinition* GetFirearmDefinition() const { return FirearmDefinition; }
 
+	float GetDamage() const { return Damage; }
+	float GetFireRate() const { return FireRate; }
+
 	bool Fire();
 	void AlternativeAction();
 
