@@ -31,4 +31,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Interact(class APlayerPawn* Pawn) override;
+
+#if WITH_EDITOR
+	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);
+#endif
 };

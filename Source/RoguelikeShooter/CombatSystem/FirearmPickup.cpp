@@ -26,6 +26,9 @@ void AFirearmPickup::InitPickup()
 	if (!Firearm)
 		return;
 
+	if (!Firearm->GetFirearmDefinition())
+		return;
+
 	FirearmMeshComponent->SetStaticMesh(Firearm->GetFirearmDefinition()->GetFirearmMesh());
 }
 
@@ -42,5 +45,17 @@ void AFirearmPickup::Interact(APlayerPawn* Pawn)
 
 	Pawn->GetPlayerCombatComponent()->AddFirearm(Firearm);
 	Destroy();
+}
+
+void AFirearmPickup::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	FName propertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+
+	if (propertyName == GET_MEMBER_NAME_CHECKED(AFirearmPickup, Firearm))
+	{
+		InitPickup();
+	}
 }
 

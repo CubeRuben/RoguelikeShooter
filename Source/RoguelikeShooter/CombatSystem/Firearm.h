@@ -28,6 +28,9 @@ protected:
 	float FireRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float NextTimeToFire;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsAutoFireMode;
 
 	void InitFirearm();
@@ -49,4 +52,8 @@ public:
 	bool GetIsAutoFireMode() const { return bIsAutoFireMode; }
 	void SetIsAutoFireMode(bool newMode) { bIsAutoFireMode = newMode; }
 	void SwitchFireMode() { bIsAutoFireMode = !bIsAutoFireMode; }
+
+#if WITH_EDITOR
+	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);
+#endif
 };

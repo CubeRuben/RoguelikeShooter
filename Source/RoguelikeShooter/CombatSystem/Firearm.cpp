@@ -26,8 +26,15 @@ void UFirearm::SetFirearmDefinition(UFirearmDefinition* NewFirearmDefinition)
 
 bool UFirearm::Fire()
 {
+	if (NextTimeToFire > GetWorld()->GetTimeSeconds())
+		return false;
+
 	FirearmDefinition->OnFire(this);
 
+	if (FireRate == 0)
+		return true;
+
+	NextTimeToFire = GetWorld()->GetTimeSeconds() + 1.0f / FireRate;
 	return true;
 }
 
@@ -44,4 +51,16 @@ void UFirearm::SetOwnerPlayerPawn(APlayerPawn* NewOwnerPlayerPawn)
 APlayerPawn* UFirearm::GetOwnerPlayerPawn() const
 {
 	return OwnerPlayerPawn.Get();
+}
+
+void UFirearm::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	FName propertyName = (PropertyChangedEvent.Property != NULL) ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+
+	if (propertyName == GET_MEMBER_NAME_CHECKED(UFirearm, FirearmDefinition))
+	{
+		InitFirearm();
+	}
 }
