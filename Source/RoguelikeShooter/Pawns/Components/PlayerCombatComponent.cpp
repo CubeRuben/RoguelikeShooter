@@ -38,6 +38,17 @@ void UPlayerCombatComponent::HandleInput()
 		return;
 	}
 
+	if (playerInput.MouseWheel > 0.0f)
+	{
+		const int amountOfHeldFirearms = HeldFirearms.Num();
+		SetCurrentFirearm((CurrentFirearmIndex - 1 + amountOfHeldFirearms) % amountOfHeldFirearms);
+	}
+	else if (playerInput.MouseWheel < 0.0f)
+	{
+		const int amountOfHeldFirearms = HeldFirearms.Num();
+		SetCurrentFirearm((CurrentFirearmIndex + 1) % amountOfHeldFirearms);
+	}
+
 	if (playerInput.bFireWeapon) 
 	{
 		if (!currentFirearm->GetIsAutoFireMode())

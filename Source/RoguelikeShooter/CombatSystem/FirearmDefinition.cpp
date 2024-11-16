@@ -11,7 +11,7 @@ FRandomFloatProperty::FRandomFloatProperty()
 
 float FRandomFloatProperty::GetRandomValue() const
 {
-	return MinValue + MaxValue / 2.0f;
+	return FMath::FRandRange(MinValue, MaxValue);
 }
 
 void UFirearmDefinition::OnFire(class UFirearm* Firearm)

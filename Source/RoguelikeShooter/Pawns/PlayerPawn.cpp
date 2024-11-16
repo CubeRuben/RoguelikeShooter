@@ -58,6 +58,7 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAxis("MouseX", this, &APlayerPawn::InputMouseXAxis);
 	PlayerInputComponent->BindAxis("MouseY", this, &APlayerPawn::InputMouseYAxis);
+	PlayerInputComponent->BindAxis("MouseWheel", this, &APlayerPawn::InputMouseWheelAxis);
 
 #define INPUT_BIND(name) PlayerInputComponent->BindAction(#name, IE_Pressed, this, &APlayerPawn::Input##name##Pressed); PlayerInputComponent->BindAction(#name, IE_Released, this, &APlayerPawn::Input##name##Released);
 

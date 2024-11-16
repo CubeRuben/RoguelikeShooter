@@ -24,6 +24,7 @@ struct FPlayerInput
 
 	float MouseX = 0.0f;
 	float MouseY = 0.0f;
+	float MouseWheel = 0.0f;
 };
 
 UCLASS()
@@ -96,4 +97,5 @@ public:
 
 	void InputMouseXAxis(float Value) { PlayerInput.MouseX = Value; };
 	void InputMouseYAxis(float Value) { PlayerInput.MouseY = Value; };
+	void InputMouseWheelAxis(float Value) { PlayerInput.MouseWheel = Value; };
 };
