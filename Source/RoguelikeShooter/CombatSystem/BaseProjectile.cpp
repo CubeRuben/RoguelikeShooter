@@ -2,13 +2,12 @@
 
 ABaseProjectile::ABaseProjectile()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	bReplicates = true;
 }
 
-void ABaseProjectile::InitProjectile(FVector Direction, float Damage, AActor* OwnerActor)
+void ABaseProjectile::InitProjectile(FVector Direction, float Damage, AActor* ShooterActor)
 {
-
+	BaseDamage = Damage;
+	OwnerActor = ShooterActor;
 }
 

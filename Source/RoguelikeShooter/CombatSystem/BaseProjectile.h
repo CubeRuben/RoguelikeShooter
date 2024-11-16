@@ -15,8 +15,14 @@ public:
 
 protected:
 
-public:	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	AActor* OwnerActor;
 
-	virtual void InitProjectile(FVector Direction, float Damage, AActor* OwnerActor);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float BaseDamage;
+
+public:
+
+	virtual void InitProjectile(FVector Direction, float Damage, AActor* ShooterActor);
 
 };
