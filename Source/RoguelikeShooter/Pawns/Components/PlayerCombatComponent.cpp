@@ -3,6 +3,8 @@
 #include "../PlayerPawn.h"
 #include "../../CombatSystem/Firearm.h"
 
+#include <Camera/CameraComponent.h>
+
 UPlayerCombatComponent::UPlayerCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -78,6 +80,22 @@ UFirearm* UPlayerCombatComponent::GetCurrentFirearm()
 		return HeldFirearms[CurrentFirearmIndex];
 
 	return nullptr;
+}
+
+FVector UPlayerCombatComponent::GetAimAdjustDirection(FVector Offset)
+{
+	const UCameraComponent* cameraComponent = PlayerPawn->GetCameraComponent();
+	const FVector startPosition = cameraComponent->GetComponentLocation();
+	const FVector endPosition = startPosition + cameraComponent->GetForwardVector() * 2000.0f;
+
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(PlayerPawn);
+
+	FHitResult hit;
+	if (!GetWorld()->LineTraceSingleByProfile(hit, startPosition, endPosition, "BlockAll", params))
+		return cameraComponent->GetForwardVector();
+
+	return (hit.Location - (startPosition + Offset)).GetSafeNormal();
 }
 
 void UPlayerCombatComponent::AddFirearm(UFirearm* NewFirearm)

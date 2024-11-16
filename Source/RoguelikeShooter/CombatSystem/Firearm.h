@@ -45,6 +45,7 @@ public:
 
 	float GetDamage() const { return Damage; }
 	float GetFireRate() const { return FireRate; }
+	FVector GetShootingOffset() const;
 
 	bool Fire();
 	void AlternativeAction();

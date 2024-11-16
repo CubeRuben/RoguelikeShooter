@@ -46,6 +46,9 @@ protected:
 	FRandomFloatProperty FireRate;
 
 	UPROPERTY(EditAnywhere)
+	FVector ShootingOffset;	
+
+	UPROPERTY(EditAnywhere)
 	class UStaticMesh* FirearmMesh;
 
 	UPROPERTY(EditAnywhere, Instanced)
@@ -55,8 +58,9 @@ public:
 
 	float GetDamage() const { return Damage.GetRandomValue(); }
 	float GetFireRate() const { return FireRate.GetRandomValue(); }
+	FVector GetShootingOffset() const { return ShootingOffset; }
 	
 	class UStaticMesh* GetFirearmMesh() const { return FirearmMesh; }
 
-	void OnFire(class UFirearm* Firearm);
+	void OnFire(class UFirearm* Firearm, FVector ShootingDirection);
 };

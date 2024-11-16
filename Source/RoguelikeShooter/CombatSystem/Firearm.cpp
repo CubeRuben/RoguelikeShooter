@@ -2,6 +2,9 @@
 
 #include "FirearmDefinition.h"
 #include "../Pawns/PlayerPawn.h"
+#include "../Pawns/Components/PlayerCombatComponent.h"
+
+#include <Camera/CameraComponent.h>
 
 UFirearm::UFirearm()
 {
@@ -24,12 +27,22 @@ void UFirearm::SetFirearmDefinition(UFirearmDefinition* NewFirearmDefinition)
 	InitFirearm();
 }
 
+FVector UFirearm::GetShootingOffset() const
+{
+	if (!OwnerPlayerPawn.IsValid())
+		return FirearmDefinition->GetShootingOffset();
+
+	return OwnerPlayerPawn->GetCameraComponent()->GetComponentRotation().RotateVector(FirearmDefinition->GetShootingOffset());
+}
+
 bool UFirearm::Fire()
 {
 	if (NextTimeToFire > GetWorld()->GetTimeSeconds())
 		return false;
 
-	FirearmDefinition->OnFire(this);
+	const FVector shootingDirection = OwnerPlayerPawn->GetPlayerCombatComponent()->GetAimAdjustDirection(GetShootingOffset());
+
+	FirearmDefinition->OnFire(this, shootingDirection);
 
 	if (FireRate == 0)
 		return true;

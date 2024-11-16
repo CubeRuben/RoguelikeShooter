@@ -14,13 +14,13 @@ float FRandomFloatProperty::GetRandomValue() const
 	return FMath::FRandRange(MinValue, MaxValue);
 }
 
-void UFirearmDefinition::OnFire(class UFirearm* Firearm)
+void UFirearmDefinition::OnFire(class UFirearm* Firearm, FVector ShootingDirection)
 {
 	for (auto& behaviour : OnFireBehaviour) 
 	{
 		if (!behaviour)
 			continue;
 
-		behaviour->OnFire(Firearm);
+		behaviour->OnFire(Firearm, ShootingDirection);
 	}
 }

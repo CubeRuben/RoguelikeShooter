@@ -2,27 +2,23 @@
 
 #include "CoreMinimal.h"
 #include "FirearmBaseFire.h"
-#include "FirearmHitscanFire.generated.h"
+#include "FirearmProjectileFire.generated.h"
 
 UCLASS()
-class ROGUELIKESHOOTER_API UFirearmHitscanFire : public UFirearmBaseFire
+class ROGUELIKESHOOTER_API UFirearmProjectileFire : public UFirearmBaseFire
 {
 	GENERATED_BODY()
-
+	
 public:
 
-	UFirearmHitscanFire();
+	UFirearmProjectileFire();
 
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float HitMaxDistance;
+	TSubclassOf<class ABaseProjectile> ProjectileClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float ScatterAngle;
-
-public: 
+public:
 
 	void OnFire(class UFirearm* Firearm, FVector ShootingDirection) override;
-	
 };

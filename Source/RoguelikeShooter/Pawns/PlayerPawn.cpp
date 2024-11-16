@@ -19,7 +19,6 @@ APlayerPawn::APlayerPawn()
 	CapsuleComponent->InitCapsuleSize(25.0f, 75.0f);
 	CapsuleComponent->SetCollisionProfileName("BlockAll");
 	CapsuleComponent->BodyInstance.bNotifyRigidBodyCollision = true;
-	CapsuleComponent->SetHiddenInGame(false);
 	RootComponent = CapsuleComponent;
 
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera Component"));
@@ -39,6 +38,10 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (IsLocallyControlled()) 
+	{
+		SkeletalMeshComponent->SetHiddenInGame(true);
+	}
 }
 
 void APlayerPawn::Tick(float DeltaTime)

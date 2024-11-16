@@ -7,7 +7,7 @@ UFirearmBaseFire::UFirearmBaseFire()
 
 }
 
-void UFirearmBaseFire::OnFire(UFirearm* Firearm)
+void UFirearmBaseFire::OnFire(UFirearm* Firearm, FVector ShootingDirection)
 {
 
 }

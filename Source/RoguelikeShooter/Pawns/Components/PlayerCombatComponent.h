@@ -27,12 +27,16 @@ protected:
 
 	void HandleInput();
 
+	
+
 public:	
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	class UFirearm* GetCurrentFirearm();
 	
+	FVector GetAimAdjustDirection(FVector Offset);
+
 	void AddFirearm(class UFirearm* NewFirearm);
 
 	void SetCurrentFirearm(int Index);

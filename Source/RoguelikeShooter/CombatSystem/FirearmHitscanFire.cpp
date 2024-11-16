@@ -12,18 +12,18 @@ UFirearmHitscanFire::UFirearmHitscanFire()
 	ScatterAngle = 1.0f;
 }
 
-void UFirearmHitscanFire::OnFire(UFirearm* Firearm)
+void UFirearmHitscanFire::OnFire(UFirearm* Firearm, FVector ShootingDirection)
 {
 	APlayerPawn* playerPawn = Firearm->GetOwnerPlayerPawn();
 	const UCameraComponent* cameraComponent = playerPawn->GetCameraComponent();
-	const FVector startPosition = cameraComponent->GetComponentLocation();
-	const FVector shootingDirection = cameraComponent->GetForwardVector();
+	const FVector startPosition = cameraComponent->GetComponentLocation() + Firearm->GetShootingOffset();
+	const FVector endPosition = startPosition + ShootingDirection * HitMaxDistance;
 
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(playerPawn);
 
 	FHitResult hitResult;
-	if (!Firearm->GetWorld()->LineTraceSingleByProfile(hitResult, startPosition, startPosition + shootingDirection * HitMaxDistance, "BlockAll", params))
+	if (!Firearm->GetWorld()->LineTraceSingleByProfile(hitResult, startPosition, endPosition, "BlockAll", params))
 		return;
 
 	if (!hitResult.GetActor())
@@ -36,7 +36,7 @@ void UFirearmHitscanFire::OnFire(UFirearm* Firearm)
 
 	FDamageParams damageParams;
 	damageParams.DamageSource = playerPawn;
-	damageParams.HitDirection = shootingDirection;
+	damageParams.HitDirection = ShootingDirection;
 	damageParams.HitLocation = hitResult.Location;
 
 	damageable->ApplyDamage(Firearm->GetDamage(), &damageParams);
