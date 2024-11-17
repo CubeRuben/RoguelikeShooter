@@ -21,11 +21,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector Velocity;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BaseSpeed;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Acceleration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseExplosionImpulse;
 
 public:
 

@@ -29,4 +29,9 @@ void ADamageableProp::ApplyDamage(float DamageAmount, FDamageParams* DamageParam
 		StaticMeshComponent->AddForceAtLocation(DamageParams->HitDirection * DamageAmount * 10.f, DamageParams->HitLocation);
 }
 
+void ADamageableProp::ApplyImpulse(FVector Impulse)
+{
+	StaticMeshComponent->AddImpulse(Impulse);
+}
+
 

@@ -1,5 +1,7 @@
 #include "RocketProjectile.h"
 
+#include "Explosion.h"
+
 ARocketProjectile::ARocketProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -11,6 +13,7 @@ ARocketProjectile::ARocketProjectile()
 	Velocity = FVector::UpVector;
 	BaseSpeed = 1500.0f;
 	Acceleration = 2000.0f;
+	BaseExplosionImpulse = 2000.0f;
 }
 
 void ARocketProjectile::Tick(float DeltaTime)
@@ -30,6 +33,13 @@ void ARocketProjectile::Tick(float DeltaTime)
 		AddActorWorldOffset(deltaMovement);
 		return;
 	}
+
+	FActorSpawnParameters spawnParams;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	AExplosion* explosion = GetWorld()->SpawnActor<AExplosion>(AExplosion::StaticClass(), GetActorLocation(), FRotator::ZeroRotator, spawnParams);
+	
+	if (explosion)
+		explosion->InitExplosion(this, BaseDamage, 7.0f * 100.0f, BaseExplosionImpulse);
 
 	Destroy();
 }

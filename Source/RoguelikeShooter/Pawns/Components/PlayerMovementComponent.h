@@ -15,6 +15,7 @@ public:
 	FMovementAttributes() 
 	{
 		Acceleration = 15.0f;
+		AccelerationInAir = 1.0f;
 		StoppingAcceleration = 25.0f;
 		MaxWalkingSpeed = 350.0f;
 		MaxRunningSpeed = 650.0f;
@@ -24,6 +25,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float Acceleration;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float AccelerationInAir;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float StoppingAcceleration;

@@ -44,6 +44,21 @@ void APlayerPawn::BeginPlay()
 	}
 }
 
+void APlayerPawn::ApplyDamage(float DamageAmount, FDamageParams* DamageParams)
+{
+	AActor* damageSource = nullptr;
+
+	if (DamageParams)
+		damageSource = DamageParams->DamageSource;
+
+	HealthComponent->ApplyDamage(DamageAmount, damageSource);
+}
+
+void APlayerPawn::ApplyImpulse(FVector Impulse)
+{
+	MovementComponent->Velocity += Impulse / 100.0f;
+}
+
 void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

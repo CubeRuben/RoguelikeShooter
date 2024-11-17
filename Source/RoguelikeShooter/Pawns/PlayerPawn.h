@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "../CombatSystem/Damageable.h"
 #include "PlayerPawn.generated.h"
 
 struct FPlayerInput
@@ -28,7 +29,7 @@ struct FPlayerInput
 };
 
 UCLASS()
-class ROGUELIKESHOOTER_API APlayerPawn : public APawn
+class ROGUELIKESHOOTER_API APlayerPawn : public APawn, public IDamageable
 {
 	GENERATED_BODY()
 
@@ -74,6 +75,11 @@ public:
 	class UPlayerCombatComponent* GetPlayerCombatComponent() const { return CombatComponent; }
 
 	FPlayerInput& GetPlayerInput() { return PlayerInput; }
+
+	// IDamageable Interface
+	void ApplyDamage(float DamageAmount, FDamageParams* DamageParams = nullptr) override;
+	void ApplyImpulse(FVector Impulse) override;
+	//
 
 	virtual void Tick(float DeltaTime) override;
 

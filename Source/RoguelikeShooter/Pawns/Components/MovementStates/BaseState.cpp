@@ -17,6 +17,12 @@ void SBaseGroundedState::OnStateEnter()
 
 void SBaseGroundedState::Tick(float DeltaTime)
 {
+	if (MovementComponent->Velocity.Z > 0)
+	{
+		MovementComponent->SwitchToState(EMovementState::InAir);
+		return;
+	}
+
 	if (UpdateInput())
 		return;
 
@@ -177,9 +183,20 @@ void SInAirState::OnStateExit()
 void SInAirState::Tick(float DeltaTime)
 {
 	// Update velocity
-	const FVector deltaVelocity(0.0f, 0.0f, MovementComponent->GetWorld()->GetGravityZ() * DeltaTime);
+	const FVector deltaVerticalVelocity(0.0f, 0.0f, MovementComponent->GetWorld()->GetGravityZ() * DeltaTime);
 
-	MovementComponent->Velocity += deltaVelocity;
+	MovementComponent->Velocity += deltaVerticalVelocity;
+
+	const FVector input = MovementComponent->GetMovementInput();
+	
+	if (!input.IsNearlyZero()) 
+	{
+		const FVector targetVelocity = input * MovementComponent->GetMovementAttributes().MaxWalkingSpeed;
+		const FVector projectedVelocity(MovementComponent->Velocity.X, MovementComponent->Velocity.Y, 0.0f);
+		const FVector deltaVelocity = (targetVelocity - projectedVelocity) * MovementComponent->GetMovementAttributes().AccelerationInAir * DeltaTime;
+
+		MovementComponent->Velocity += deltaVelocity;
+	}
 
 	// Move pawn
 	const FVector movementDelta = MovementComponent->Velocity * DeltaTime;

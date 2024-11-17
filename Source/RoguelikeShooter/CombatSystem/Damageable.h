@@ -37,4 +37,5 @@ class ROGUELIKESHOOTER_API IDamageable
 public:
 
 	virtual void ApplyDamage(float DamageAmount, FDamageParams* = nullptr) {}
+	virtual void ApplyImpulse(FVector Impulse) {}
 };
