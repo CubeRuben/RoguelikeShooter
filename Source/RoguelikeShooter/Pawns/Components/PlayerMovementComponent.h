@@ -75,6 +75,7 @@ protected:
 	float ReplicatedPawnRotation;
 
 	void BeginPlay() override;
+	void BeginDestroy() override;
 		
 	void AddStateToMap(class SBaseState* NewState);
 

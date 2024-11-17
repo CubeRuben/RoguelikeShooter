@@ -1,7 +1,7 @@
 #include "BombProjectile.h"
 
-#include "Damageable.h"
-#include "Explosion.h"
+#include "../Damageable.h"
+#include "../Actors/Explosion.h"
 
 ABombProjectile::ABombProjectile()
 {

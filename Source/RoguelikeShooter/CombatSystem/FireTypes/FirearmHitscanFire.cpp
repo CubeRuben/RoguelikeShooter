@@ -1,8 +1,8 @@
 #include "FirearmHitscanFire.h"
 
-#include "Firearm.h"
-#include "Damageable.h"
-#include "../Pawns/PlayerPawn.h"
+#include "../Firearm.h"
+#include "../Damageable.h"
+#include "../../Pawns/PlayerPawn.h"
 
 #include <Camera/CameraComponent.h>
 

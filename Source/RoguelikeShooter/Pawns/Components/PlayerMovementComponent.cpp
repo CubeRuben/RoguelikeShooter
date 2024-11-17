@@ -1,7 +1,10 @@
 #include "PlayerMovementComponent.h"
 
 #include "../PlayerPawn.h"
-#include "MovementStates/BaseState.h"
+#include "MovementStates/IdleState.h"
+#include "MovementStates/WalkState.h"
+#include "MovementStates/RunState.h"
+#include "MovementStates/InAirState.h"
 
 #include <Components/CapsuleComponent.h>
 #include <Camera/CameraComponent.h>
@@ -29,6 +32,17 @@ void UPlayerMovementComponent::BeginPlay()
 
 	if (!PlayerPawn)
 		DestroyComponent();
+}
+
+void UPlayerMovementComponent::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+	for (auto& pair : StatesMap) 
+	{
+		if (pair.Value)
+			delete pair.Value;
+	}
 }
 
 void UPlayerMovementComponent::AddStateToMap(SBaseState* NewState)

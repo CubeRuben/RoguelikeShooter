@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "../Pawns/Components/Interactable.h"
+#include "../../Pawns/Components/Interactable.h"
 #include "FirearmPickup.generated.h"
 
 UCLASS()

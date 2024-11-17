@@ -1,6 +1,6 @@
 #include "RocketProjectile.h"
 
-#include "Explosion.h"
+#include "../Actors/Explosion.h"
 
 ARocketProjectile::ARocketProjectile()
 {

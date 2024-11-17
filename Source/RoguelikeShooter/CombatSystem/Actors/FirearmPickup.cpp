@@ -1,9 +1,9 @@
 #include "FirearmPickup.h"
 
-#include "Firearm.h"
-#include "FirearmDefinition.h"
-#include "../Pawns/PlayerPawn.h"
-#include "../Pawns/Components/PlayerCombatComponent.h"
+#include "../Firearm.h"
+#include "../FirearmDefinition.h"
+#include "../../Pawns/PlayerPawn.h"
+#include "../../Pawns/Components/PlayerCombatComponent.h"
 
 AFirearmPickup::AFirearmPickup()
 {

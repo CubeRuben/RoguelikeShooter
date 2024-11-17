@@ -1,8 +1,8 @@
 #include "FirearmProjectileFire.h"
 
-#include "BaseProjectile.h"
-#include "Firearm.h"
-#include "../Pawns/PlayerPawn.h"
+#include "../Projectiles/BaseProjectile.h"
+#include "../Firearm.h"
+#include "../../Pawns/PlayerPawn.h"
 
 #include <Camera/CameraComponent.h>
 

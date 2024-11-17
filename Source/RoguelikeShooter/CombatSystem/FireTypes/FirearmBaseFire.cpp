@@ -1,6 +1,6 @@
 #include "FirearmBaseFire.h"
 
-#include "Firearm.h"
+#include "../Firearm.h"
 
 UFirearmBaseFire::UFirearmBaseFire()
 {

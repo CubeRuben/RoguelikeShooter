@@ -27,7 +27,6 @@ void UPlayerCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	HandleInput();
-
 }
 
 void UPlayerCombatComponent::HandleInput()

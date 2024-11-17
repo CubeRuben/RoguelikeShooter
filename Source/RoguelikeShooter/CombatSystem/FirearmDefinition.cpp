@@ -1,7 +1,7 @@
 #include "FirearmDefinition.h"
 
 #include "Firearm.h"
-#include "FirearmBaseFire.h"
+#include "FireTypes/FirearmBaseFire.h"
 
 FRandomFloatProperty::FRandomFloatProperty()
 {
