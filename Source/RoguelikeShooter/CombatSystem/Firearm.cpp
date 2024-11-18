@@ -41,7 +41,6 @@ bool UFirearm::Fire()
 		return false;
 
 	const FVector shootingDirection = OwnerPlayerPawn->GetPlayerCombatComponent()->GetAimAdjustDirection(GetShootingOffset());
-
 	FirearmDefinition->OnFire(this, shootingDirection);
 
 	if (FireRate == 0)

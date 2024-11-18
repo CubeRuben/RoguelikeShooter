@@ -2,6 +2,9 @@
 
 #include "Firearm.h"
 #include "FireTypes/FirearmBaseFire.h"
+#include "../Pawns/Components/PlayerCombatComponent.h"
+#include "../Pawns/PlayerPawn.h"
+#include "AmmoDefinition.h"
 
 FRandomFloatProperty::FRandomFloatProperty()
 {
@@ -21,6 +24,7 @@ void UFirearmDefinition::OnFire(class UFirearm* Firearm, FVector ShootingDirecti
 		if (!behaviour)
 			continue;
 
-		behaviour->OnFire(Firearm, ShootingDirection);
+		if (Firearm->GetOwnerPlayerPawn()->GetPlayerCombatComponent()->ConsumeAmmo(behaviour->GetAmmoDefinition(), behaviour->GetAmmoConsumption()))
+			behaviour->OnFire(Firearm, ShootingDirection);
 	}
 }

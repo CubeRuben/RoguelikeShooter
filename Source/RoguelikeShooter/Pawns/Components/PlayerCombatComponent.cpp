@@ -2,6 +2,7 @@
 
 #include "../PlayerPawn.h"
 #include "../../CombatSystem/Firearm.h"
+#include "../../CombatSystem/AmmoDefinition.h"
 
 #include <Camera/CameraComponent.h>
 
@@ -113,4 +114,48 @@ void UPlayerCombatComponent::SetCurrentFirearm(int Index)
 		return;
 
 	CurrentFirearmIndex = Index;
+}
+
+bool UPlayerCombatComponent::AddAmmo(UAmmoDefinition* AmmoDefinition, int AmmoAmount)
+{
+	if (!AmmoDefinition)
+		return false;
+
+	int* ammoAmount = ContainedAmmo.Find(AmmoDefinition);
+
+	if (ammoAmount) 
+	{
+		if (*ammoAmount >= AmmoDefinition->GetMaxAmount()) 
+			return false;
+		
+		*ammoAmount = FMath::Min(AmmoDefinition->GetMaxAmount(), *ammoAmount + AmmoAmount);
+		return true;
+	}
+
+	ContainedAmmo.Add(AmmoDefinition, FMath::Min(AmmoDefinition->GetMaxAmount(), AmmoAmount));
+	return true;
+}
+
+bool UPlayerCombatComponent::CanConsumeAmmo(UAmmoDefinition* AmmoDefinition, int AmmoAmount)
+{
+	int* ammoAmount = ContainedAmmo.Find(AmmoDefinition);
+
+	if (!ammoAmount)
+		return false;
+
+	if (*ammoAmount < AmmoAmount)
+		return false;
+
+	return true;
+}
+
+bool UPlayerCombatComponent::ConsumeAmmo(UAmmoDefinition* AmmoDefinition, int AmmoAmount)
+{
+	if (CanConsumeAmmo(AmmoDefinition, AmmoAmount))
+	{
+		*ContainedAmmo.Find(AmmoDefinition) -= AmmoAmount;
+		return true;
+	}
+	
+	return false;
 }

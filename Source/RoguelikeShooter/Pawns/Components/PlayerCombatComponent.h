@@ -23,6 +23,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<TObjectPtr<class UFirearm>> HeldFirearms;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TMap<class UAmmoDefinition*, int> ContainedAmmo;
+
+
 	virtual void BeginPlay() override;
 
 	void HandleInput();
@@ -40,4 +44,8 @@ public:
 	void AddFirearm(class UFirearm* NewFirearm);
 
 	void SetCurrentFirearm(int Index);
+
+	bool AddAmmo(class UAmmoDefinition* AmmoDefinition, int AmmoAmount);
+	bool CanConsumeAmmo(class UAmmoDefinition* AmmoDefinition, int AmmoAmount);
+	bool ConsumeAmmo(class UAmmoDefinition* AmmoDefinition, int AmmoAmount);
 };

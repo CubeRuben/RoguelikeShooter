@@ -13,5 +13,18 @@ public:
 
 	UFirearmBaseFire();
 
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UAmmoDefinition* AmmoDefinition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int AmmoConsumption;
+
+public:
+
 	virtual void OnFire(class UFirearm* Firearm, FVector ShootingDirection);
+
+	class UAmmoDefinition* GetAmmoDefinition() const { return AmmoDefinition; }
+	int GetAmmoConsumption() const { return AmmoConsumption; }
 };

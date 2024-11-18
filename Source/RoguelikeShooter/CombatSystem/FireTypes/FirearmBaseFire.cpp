@@ -4,10 +4,11 @@
 
 UFirearmBaseFire::UFirearmBaseFire()
 {
-
+	AmmoDefinition = nullptr;
+	AmmoConsumption = 1;
 }
 
 void UFirearmBaseFire::OnFire(UFirearm* Firearm, FVector ShootingDirection)
 {
-
+	
 }
