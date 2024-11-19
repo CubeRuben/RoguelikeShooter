@@ -15,6 +15,14 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UNiagaraComponent* NiagaraComponent;
+
+	void BeginPlay() override;
+
+	UFUNCTION()
+	void OnSystemFinished(class UNiagaraComponent* System);
+
 public:	
 
 	void InitExplosion(AActor* ExplosionOwner, float Damage, float DamageDistance, float Impulse);

@@ -3,10 +3,38 @@
 #include "EngineUtils.h"
 #include "../Damageable.h"
 
+#include <NiagaraFunctionLibrary.h>
+#include <NiagaraComponent.h>
+#include <NiagaraSystem.h>
+
 AExplosion::AExplosion()
 {
-	//PrimaryActorTick.bCanEverTick = true;
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root Component"));
+
+	ConstructorHelpers::FObjectFinder<UNiagaraSystem> ExplosionNiagaraSystemAsset(TEXT("/Game/VFX/Explosion/NS_Explosion.NS_Explosion"));
+
+	if (ExplosionNiagaraSystemAsset.Object)
+	{
+		NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("Niagara Component"));
+		NiagaraComponent->SetupAttachment(RootComponent);
+		NiagaraComponent->SetAsset(ExplosionNiagaraSystemAsset.Object);
+	}
+}
+
+void AExplosion::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!NiagaraComponent)
+		return;
+
+	NiagaraComponent->OnSystemFinished.AddDynamic(this, &AExplosion::OnSystemFinished);
+	NiagaraComponent->Activate(true);
+}
+
+void AExplosion::OnSystemFinished(UNiagaraComponent* System)
+{
+	Destroy();
 }
 
 void AExplosion::InitExplosion(AActor* ExplosionOwner, float Damage, float DamageDistance, float Impulse)
