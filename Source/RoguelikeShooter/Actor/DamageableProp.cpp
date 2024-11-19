@@ -6,19 +6,23 @@ ADamageableProp::ADamageableProp()
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh Component"));
 	StaticMeshComponent->SetSimulatePhysics(true);
+	RootComponent = StaticMeshComponent;
 
 	HealthPoints = 100.0f;
 }
 
+void ADamageableProp::OnDestroy()
+{
+	Destroy();
+}
+
 void ADamageableProp::ApplyDamage(float DamageAmount, FDamageParams* DamageParams)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Damaged");
-
 	HealthPoints -= DamageAmount;
 
 	if (HealthPoints <= 0.0f)
 	{
-		Destroy();
+		OnDestroy();
 		return;
 	}
 

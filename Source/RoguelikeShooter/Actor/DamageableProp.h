@@ -22,9 +22,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float HealthPoints;
 
+	virtual void OnDestroy();
+
 public:	
 
-	void ApplyDamage(float DamageAmount, FDamageParams* DamageParams = nullptr) override;
+	virtual void ApplyDamage(float DamageAmount, FDamageParams* DamageParams = nullptr) override;
 	void ApplyImpulse(FVector Impulse) override;
 
 };
