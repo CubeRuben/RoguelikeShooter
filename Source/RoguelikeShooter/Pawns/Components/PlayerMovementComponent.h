@@ -69,10 +69,16 @@ protected:
 
 	// Replication
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
-	FVector ReplicatedLocation;
+	FVector Location_Replicated;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
-	float ReplicatedPawnRotation;
+	FVector Velocity_Replicated;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
+	float PawnRotation_Replicated;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
+	EMovementState CurrentMovementState_Replicated;
 
 	void BeginPlay() override;
 	void BeginDestroy() override;
@@ -94,7 +100,6 @@ public:
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	FVector GetMovementInput();
-	float GetTargetSpeed();
 
 	void SwitchToState(EMovementState NewState);
 
@@ -105,7 +110,7 @@ public:
 	void SweepGround(float Height, FHitResult& OutHit);
 
 	UFUNCTION(Server, Unreliable)
-	void ReplicateMovement_ServerRPC(FVector Location, float PawnRotation);
-	void ReplicateMovement_ServerRPC_Implementation(FVector Location, float PawnRotation);
+	void ReplicateMovement_ServerRPC(FVector Location, FVector PawnVelocity, float PawnRotation, EMovementState MovementStateType);
+	void ReplicateMovement_ServerRPC_Implementation(FVector Location, FVector PawnVelocity, float PawnRotation, EMovementState MovementStateType);
 
 };

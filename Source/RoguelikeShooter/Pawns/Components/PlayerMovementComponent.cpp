@@ -12,13 +12,6 @@
 
 UPlayerMovementComponent::UPlayerMovementComponent()
 {
-	AddStateToMap(new SIdleState(this));
-	AddStateToMap(new SWalkState(this));
-	AddStateToMap(new SRunState(this));
-	AddStateToMap(new SInAirState(this));
-	
-	SwitchToState(EMovementState::Idle);
-
 	SetIsReplicated(true);
 
 	PlayerPawn = nullptr;
@@ -32,6 +25,23 @@ void UPlayerMovementComponent::BeginPlay()
 
 	if (!PlayerPawn)
 		DestroyComponent();
+
+	if (PlayerPawn->IsLocallyControlled()) 
+	{
+		AddStateToMap(new SIdleState(this));
+		AddStateToMap(new SWalkState(this));
+		AddStateToMap(new SRunState(this));
+		AddStateToMap(new SInAirState(this));
+
+		SwitchToState(EMovementState::Idle);
+	}
+	else 
+	{
+		Location_Replicated = PlayerPawn->GetActorLocation();
+		PawnRotation_Replicated = PlayerPawn->GetActorRotation().Yaw;
+
+		CurrentMovementStateType = EMovementState::Idle;
+	}
 }
 
 void UPlayerMovementComponent::BeginDestroy()
@@ -59,7 +69,7 @@ void UPlayerMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	{
 		LocalPlayerTick(DeltaTime);
 
-		ReplicateMovement_ServerRPC(PlayerPawn->GetActorLocation(), PlayerPawn->GetActorRotation().Yaw);
+		ReplicateMovement_ServerRPC(PlayerPawn->GetActorLocation(), Velocity, PlayerPawn->GetActorRotation().Yaw, CurrentMovementStateType);
 	}
 	else 
 	{
@@ -75,57 +85,18 @@ void UPlayerMovementComponent::LocalPlayerTick(float DeltaTime)
 	{
 		CurrentMovementState->Tick(DeltaTime);
 	}
-
-	/*
-
-	const FVector startLocation = PlayerPawn->GetActorLocation();
-
-	Velocity.Z += GetWorld()->GetGravityZ() * DeltaTime;
-
-	FHitResult hit;
-	SafeMoveUpdatedComponent(Velocity * DeltaTime, PlayerPawn->GetActorQuat(), true, hit);
-
-	if (hit.bBlockingHit)
-	{
-		const float slopeAngle = FMath::RadiansToDegrees(FMath::Acos(hit.ImpactNormal.Z));
-
-		if (hit.ImpactNormal.Z < 0.0f)
-		{
-			if (slopeAngle - 90.0f > MovementAttributes.SlopeAngle && Velocity.Z > 0)
-			{
-				Velocity.Z = 0.0f;
-			}
-		}
-		else
-		{
-			if (slopeAngle < MovementAttributes.SlopeAngle)
-			{
-				Velocity.Z = 0.0f;
-				bIsInAir = false;
-			}
-			else
-			{
-				bIsInAir = true;
-			}
-		}
-
-		SlideAlongSurface(Velocity * DeltaTime, 1.0f - hit.Time, hit.ImpactNormal, hit);
-	}
-	else
-	{
-		bIsInAir = true;
-	}
-
-	Velocity = (PlayerPawn->GetActorLocation() - startLocation) / DeltaTime;*/
 }
 
 void UPlayerMovementComponent::ReplicatedPlayerTick(float DeltaTime)
 {
+	Velocity = Velocity_Replicated;
+	CurrentMovementStateType = CurrentMovementState_Replicated;
+
 	const FVector location = PlayerPawn->GetActorLocation();
-	const FVector newLocation = FMath::VInterpTo(location, ReplicatedLocation, DeltaTime, 5.0f);
+	const FVector newLocation = FMath::VInterpTo(location, Location_Replicated, DeltaTime, 15.0f);
 
 	const FRotator rotation = PlayerPawn->GetActorRotation();
-	const FRotator newRotation = FMath::RInterpTo(rotation, FRotator(0.0f, ReplicatedPawnRotation, 0.0f), DeltaTime, 5.0f);
+	const FRotator newRotation = FMath::RInterpTo(rotation, FRotator(0.0f, PawnRotation_Replicated, 0.0f), DeltaTime, 15.0f);
 
 	PlayerPawn->SetActorLocation(newLocation);
 	PlayerPawn->SetActorRotation(newRotation);
@@ -222,14 +193,18 @@ void UPlayerMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UPlayerMovementComponent, ReplicatedLocation);
-	DOREPLIFETIME(UPlayerMovementComponent, ReplicatedPawnRotation);
+	DOREPLIFETIME(UPlayerMovementComponent, Location_Replicated);
+	DOREPLIFETIME(UPlayerMovementComponent, Velocity_Replicated);
+	DOREPLIFETIME(UPlayerMovementComponent, PawnRotation_Replicated);
+	DOREPLIFETIME(UPlayerMovementComponent, CurrentMovementState_Replicated);
 }
 
-void UPlayerMovementComponent::ReplicateMovement_ServerRPC_Implementation(FVector Location, float PawnRotation)
+void UPlayerMovementComponent::ReplicateMovement_ServerRPC_Implementation(FVector Location, FVector PawnVelocity, float PawnRotation, EMovementState MovementStateType)
 {
-	ReplicatedLocation = Location;
-	ReplicatedPawnRotation = PawnRotation;
+	Location_Replicated = Location;
+	Velocity_Replicated = PawnVelocity;
+	PawnRotation_Replicated = PawnRotation;
+	CurrentMovementState_Replicated = MovementStateType;
 }
 
 

@@ -7,6 +7,7 @@ class SBaseState
 public:
 
     SBaseState(class UPlayerMovementComponent* NewMovementComponent);
+    virtual ~SBaseState() {}
 
 protected:
 
