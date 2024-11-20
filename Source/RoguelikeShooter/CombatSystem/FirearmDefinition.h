@@ -28,6 +28,30 @@ public:
 	float GetMaxValue() const { return MaxValue; }
 };
 
+USTRUCT()
+struct FRandomIntProperty
+{
+	GENERATED_BODY()
+
+public:
+
+	FRandomIntProperty();
+
+protected:
+
+	UPROPERTY(EditAnywhere)
+	int MinValue;
+
+	UPROPERTY(EditAnywhere)
+	int MaxValue;
+
+public:
+
+	int GetRandomValue() const;
+	int GetMinValue() const { return MinValue; }
+	int GetMaxValue() const { return MaxValue; }
+};
+
 UCLASS()
 class ROGUELIKESHOOTER_API UFirearmDefinition : public UDataAsset
 {
@@ -46,6 +70,12 @@ protected:
 	FRandomFloatProperty FireRate;
 
 	UPROPERTY(EditAnywhere)
+	FRandomIntProperty AmmoCapacity;
+
+	UPROPERTY(EditAnywhere)
+	FRandomFloatProperty AmmoReloadTime;
+
+	UPROPERTY(EditAnywhere)
 	FVector ShootingOffset;	
 
 	UPROPERTY(EditAnywhere)
@@ -58,9 +88,13 @@ public:
 
 	float GetDamage() const { return Damage.GetRandomValue(); }
 	float GetFireRate() const { return FireRate.GetRandomValue(); }
+	int GetAmmoCapacity() const { return AmmoCapacity.GetRandomValue(); }
+	float GetAmmoReloadTime() const {return AmmoReloadTime.GetRandomValue(); }
 	FVector GetShootingOffset() const { return ShootingOffset; }
 	
 	class UStaticMesh* GetFirearmMesh() const { return FirearmMesh; }
+
+	void GetRequiredAmmoTypes(TSet<class UAmmoDefinition*>& RequiredAmmo) const;
 
 	void OnFire(class UFirearm* Firearm, FVector ShootingDirection);
 };

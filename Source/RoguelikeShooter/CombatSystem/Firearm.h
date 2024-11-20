@@ -28,6 +28,15 @@ protected:
 	float FireRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int AmmoCapacity;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float AmmoReloadTime;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TMap<class UAmmoDefinition*, int> ContainedAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float NextTimeToFire;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -45,6 +54,7 @@ public:
 
 	float GetDamage() const { return Damage; }
 	float GetFireRate() const { return FireRate; }
+	float GetAmmoReloadTime() const { return AmmoReloadTime; }
 	FVector GetShootingOffset() const;
 
 	bool Fire();
@@ -53,6 +63,12 @@ public:
 	bool GetIsAutoFireMode() const { return bIsAutoFireMode; }
 	void SetIsAutoFireMode(bool newMode) { bIsAutoFireMode = newMode; }
 	void SwitchFireMode() { bIsAutoFireMode = !bIsAutoFireMode; }
+
+	bool CanConsumeAmmo(class UAmmoDefinition* AmmoDefinition, int AmmoAmount);
+	bool ConsumeAmmo(class UAmmoDefinition* AmmoDefinition, int AmmoAmount);
+
+	bool CanReloadAmmo();
+	void ReloadAmmo();
 
 #if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);

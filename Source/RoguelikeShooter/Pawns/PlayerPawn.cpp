@@ -93,5 +93,6 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	INPUT_BIND(FireWeapon);
 	INPUT_BIND(AlternativeWeaponAction);
 	INPUT_BIND(SwitchFireMode);
+	INPUT_BIND(Reload);
 }
 

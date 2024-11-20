@@ -21,17 +21,24 @@ protected:
 	int CurrentFirearmIndex;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsReloading;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float ReloadingTimer;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<TObjectPtr<class UFirearm>> HeldFirearms;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TMap<class UAmmoDefinition*, int> ContainedAmmo;
 
-
 	virtual void BeginPlay() override;
 
 	void HandleInput();
+	void UpdateReloading(float DeltaTime);
 
-	
+	void StartReloading();
+	void StopReloading();
 
 public:	
 	
@@ -46,6 +53,7 @@ public:
 	void SetCurrentFirearm(int Index);
 
 	bool AddAmmo(class UAmmoDefinition* AmmoDefinition, int AmmoAmount);
+	int GetAmmoAmount(class UAmmoDefinition* AmmoDefinition) const;
 	bool CanConsumeAmmo(class UAmmoDefinition* AmmoDefinition, int AmmoAmount);
 	bool ConsumeAmmo(class UAmmoDefinition* AmmoDefinition, int AmmoAmount);
 };

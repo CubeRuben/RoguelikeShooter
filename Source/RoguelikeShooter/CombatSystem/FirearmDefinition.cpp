@@ -2,8 +2,6 @@
 
 #include "Firearm.h"
 #include "FireTypes/FirearmBaseFire.h"
-#include "../Pawns/Components/PlayerCombatComponent.h"
-#include "../Pawns/PlayerPawn.h"
 #include "AmmoDefinition.h"
 
 FRandomFloatProperty::FRandomFloatProperty()
@@ -17,6 +15,28 @@ float FRandomFloatProperty::GetRandomValue() const
 	return FMath::FRandRange(MinValue, MaxValue);
 }
 
+FRandomIntProperty::FRandomIntProperty()
+{
+	MinValue = 0;
+	MaxValue = 0;
+}
+
+int FRandomIntProperty::GetRandomValue() const
+{
+	return FMath::RandRange(MinValue, MaxValue);
+}
+
+void UFirearmDefinition::GetRequiredAmmoTypes(TSet<UAmmoDefinition*>& RequiredAmmo) const
+{
+	for (auto& behaviour : OnFireBehaviour)
+	{
+		if (!behaviour)
+			continue;
+
+		RequiredAmmo.Add(behaviour->GetAmmoDefinition());
+	}
+}
+
 void UFirearmDefinition::OnFire(class UFirearm* Firearm, FVector ShootingDirection)
 {
 	for (auto& behaviour : OnFireBehaviour) 
@@ -24,7 +44,7 @@ void UFirearmDefinition::OnFire(class UFirearm* Firearm, FVector ShootingDirecti
 		if (!behaviour)
 			continue;
 
-		if (Firearm->GetOwnerPlayerPawn()->GetPlayerCombatComponent()->ConsumeAmmo(behaviour->GetAmmoDefinition(), behaviour->GetAmmoConsumption()))
+		if (Firearm->ConsumeAmmo(behaviour->GetAmmoDefinition(), behaviour->GetAmmoConsumption()))
 			behaviour->OnFire(Firearm, ShootingDirection);
 	}
 }

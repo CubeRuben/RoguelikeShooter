@@ -28,6 +28,8 @@ void UPlayerCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	HandleInput();
+
+	UpdateReloading(DeltaTime);
 }
 
 void UPlayerCombatComponent::HandleInput()
@@ -44,12 +46,17 @@ void UPlayerCombatComponent::HandleInput()
 	{
 		const int amountOfHeldFirearms = HeldFirearms.Num();
 		SetCurrentFirearm((CurrentFirearmIndex - 1 + amountOfHeldFirearms) % amountOfHeldFirearms);
+		StopReloading();
 	}
 	else if (playerInput.MouseWheel < 0.0f)
 	{
 		const int amountOfHeldFirearms = HeldFirearms.Num();
 		SetCurrentFirearm((CurrentFirearmIndex + 1) % amountOfHeldFirearms);
+		StopReloading();
 	}
+
+	if (bIsReloading)
+		return;
 
 	if (playerInput.bFireWeapon) 
 	{
@@ -72,6 +79,46 @@ void UPlayerCombatComponent::HandleInput()
 
 		currentFirearm->SwitchFireMode();
 	}
+
+	if (playerInput.bReload) 
+	{
+		playerInput.bReload = false;
+
+		if (currentFirearm->CanReloadAmmo())
+			StartReloading();
+	}
+}
+
+void UPlayerCombatComponent::UpdateReloading(float DeltaTime)
+{
+	if (!bIsReloading)
+		return;
+
+	ReloadingTimer -= DeltaTime;
+
+	if (ReloadingTimer > 0)
+		return;
+	
+	GetCurrentFirearm()->ReloadAmmo();
+
+	StopReloading();
+}
+
+void UPlayerCombatComponent::StartReloading()
+{
+	UFirearm* currentFirearm = GetCurrentFirearm();
+
+	if (!currentFirearm)
+		return;
+
+	ReloadingTimer = currentFirearm->GetAmmoReloadTime();
+	bIsReloading = true;
+}
+
+void UPlayerCombatComponent::StopReloading()
+{
+	ReloadingTimer = 0.0f;
+	bIsReloading = false;
 }
 
 UFirearm* UPlayerCombatComponent::GetCurrentFirearm()
@@ -136,6 +183,16 @@ bool UPlayerCombatComponent::AddAmmo(UAmmoDefinition* AmmoDefinition, int AmmoAm
 	return true;
 }
 
+int UPlayerCombatComponent::GetAmmoAmount(UAmmoDefinition* AmmoDefinition) const
+{
+	const int* ammoAmountPtr = ContainedAmmo.Find(AmmoDefinition);
+
+	if (ammoAmountPtr)
+		return *ammoAmountPtr;
+
+	return 0;
+}
+
 bool UPlayerCombatComponent::CanConsumeAmmo(UAmmoDefinition* AmmoDefinition, int AmmoAmount)
 {
 	int* ammoAmount = ContainedAmmo.Find(AmmoDefinition);
@@ -156,6 +213,6 @@ bool UPlayerCombatComponent::ConsumeAmmo(UAmmoDefinition* AmmoDefinition, int Am
 		*ContainedAmmo.Find(AmmoDefinition) -= AmmoAmount;
 		return true;
 	}
-	
+
 	return false;
 }
