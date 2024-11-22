@@ -9,6 +9,8 @@
 
 AExplosion::AExplosion()
 {
+	bReplicates = true;
+
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root Component"));
 
 	ConstructorHelpers::FObjectFinder<UNiagaraSystem> ExplosionNiagaraSystemAsset(TEXT("/Game/VFX/Explosion/NS_Explosion.NS_Explosion"));

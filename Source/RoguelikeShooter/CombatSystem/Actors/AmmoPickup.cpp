@@ -5,8 +5,11 @@
 
 AAmmoPickup::AAmmoPickup()
 {
+	bReplicates = true;
+
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	MeshComponent->SetSimulatePhysics(true);
+	MeshComponent->SetCollisionProfileName("Pickup");
 	RootComponent = MeshComponent;
 
 	AmmoDefinition = nullptr;

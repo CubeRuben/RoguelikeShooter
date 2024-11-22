@@ -27,11 +27,13 @@ protected:
 	void HandleInput();
 
 	UFUNCTION()
-	void OnPawnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	void OnPawnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:	
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	UFUNCTION(Server, Reliable)
+	void Interact_ServerRPC(AActor* Actor);
+	void Interact_ServerRPC_Implementation(AActor* Actor);
 };

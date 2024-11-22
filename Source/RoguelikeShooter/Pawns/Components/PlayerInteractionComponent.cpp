@@ -25,16 +25,21 @@ void UPlayerInteractionComponent::BeginPlay()
 	if (!PlayerPawn)
 		DestroyComponent();
 
-	PlayerPawn->GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &UPlayerInteractionComponent::OnPawnHit);
+	PlayerPawn->GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &UPlayerInteractionComponent::OnPawnOverlap);
 }
 
 void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	UpdateInteractableInSight();
+	if (PlayerPawn->IsLocallyControlled()) 
+	{
+		UpdateInteractableInSight();
 
-	HandleInput();
+		HandleInput();
+		return;
+	}
+
 }
 
 void UPlayerInteractionComponent::UpdateInteractableInSight()
@@ -83,12 +88,22 @@ void UPlayerInteractionComponent::HandleInput()
 		if (!InteractableInSight.GetInterface())
 			return;
 
-		InteractableInSight->Interact(PlayerPawn);
+		if (PlayerPawn->HasAuthority())
+		{
+			InteractableInSight->Interact(PlayerPawn);
+		}
+		else 
+		{
+			Interact_ServerRPC(Cast<AActor>(InteractableInSight.GetObject()));
+		}
 	}
 }
 
-void UPlayerInteractionComponent::OnPawnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void UPlayerInteractionComponent::OnPawnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!PlayerPawn->HasAuthority())
+		return;
+
 	if (!OtherActor)
 		return;
 
@@ -98,4 +113,17 @@ void UPlayerInteractionComponent::OnPawnHit(UPrimitiveComponent* HitComponent, A
 		return;
 
 	interactablePickup->Pickup(PlayerPawn);
+}
+
+void UPlayerInteractionComponent::Interact_ServerRPC_Implementation(AActor* Actor)
+{
+	if (!Actor)
+		return;
+
+	IInteractable* interactable = Cast<IInteractable>(Actor);
+
+	if (!interactable)
+		return;
+	
+	interactable->Interact(PlayerPawn);
 }

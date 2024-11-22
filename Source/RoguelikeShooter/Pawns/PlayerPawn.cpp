@@ -17,8 +17,7 @@ APlayerPawn::APlayerPawn()
 
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule Component"));
 	CapsuleComponent->InitCapsuleSize(25.0f, 75.0f);
-	CapsuleComponent->SetCollisionProfileName("BlockAll");
-	CapsuleComponent->BodyInstance.bNotifyRigidBodyCollision = true;
+	CapsuleComponent->SetCollisionProfileName("Player");
 	RootComponent = CapsuleComponent;
 
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera Component"));

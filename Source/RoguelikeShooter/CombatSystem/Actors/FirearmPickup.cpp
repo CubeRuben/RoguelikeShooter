@@ -9,6 +9,8 @@ AFirearmPickup::AFirearmPickup()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	bReplicates = true;
+
 	FirearmMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Firearm Mesh Component"));
 	FirearmMeshComponent->SetSimulatePhysics(true);
 	RootComponent = FirearmMeshComponent;
