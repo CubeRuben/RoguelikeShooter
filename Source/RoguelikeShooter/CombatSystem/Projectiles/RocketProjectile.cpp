@@ -2,6 +2,8 @@
 
 #include "../Actors/Explosion.h"
 
+#include <Net/UnrealNetwork.h>
+
 ARocketProjectile::ARocketProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -14,11 +16,33 @@ ARocketProjectile::ARocketProjectile()
 	BaseSpeed = 1500.0f;
 	Acceleration = 2000.0f;
 	BaseExplosionImpulse = 2000.0f;
+
+	Location_Replicated = FVector::ZeroVector;
+}
+
+void ARocketProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Location_Replicated = GetActorLocation();
+}
+
+void ARocketProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ARocketProjectile, Location_Replicated);
 }
 
 void ARocketProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!HasAuthority()) 
+	{
+		SetActorLocation(FMath::VInterpTo(GetActorLocation(), Location_Replicated, DeltaTime, 10.0f));
+		return;
+	}
 
 	Velocity += Velocity.GetSafeNormal() * Acceleration * DeltaTime;
 	const FVector deltaMovement = Velocity * DeltaTime;
@@ -31,6 +55,7 @@ void ARocketProjectile::Tick(float DeltaTime)
 	if (!GetWorld()->LineTraceSingleByProfile(hit, GetActorLocation(), GetActorLocation() + deltaMovement, "BlockAll", params))
 	{
 		AddActorWorldOffset(deltaMovement);
+		Location_Replicated = GetActorLocation();
 		return;
 	}
 

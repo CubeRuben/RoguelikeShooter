@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "../../CombatSystem/AmmoContainer.h"
 #include "PlayerCombatComponent.generated.h"
 
 UCLASS()
@@ -26,11 +27,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float ReloadingTimer;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
 	TArray<TObjectPtr<class UFirearm>> HeldFirearms;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TMap<class UAmmoDefinition*, int> ContainedAmmo;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
+	TArray<FAmmoContainer> ContainedAmmo;
 
 	virtual void BeginPlay() override;
 
@@ -39,6 +40,8 @@ protected:
 
 	void StartReloading();
 	void StopReloading();
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 	
@@ -56,4 +59,10 @@ public:
 	int GetAmmoAmount(class UAmmoDefinition* AmmoDefinition) const;
 	bool CanConsumeAmmo(class UAmmoDefinition* AmmoDefinition, int AmmoAmount);
 	bool ConsumeAmmo(class UAmmoDefinition* AmmoDefinition, int AmmoAmount);
+
+	bool ReplicateSubobjects(class UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+
+	UFUNCTION(Server, Reliable)
+	void Fire_ServerRPC();
+	void Fire_ServerRPC_Implementation();
 };

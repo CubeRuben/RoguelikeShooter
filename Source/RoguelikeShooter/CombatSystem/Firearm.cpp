@@ -6,6 +6,7 @@
 #include "../Pawns/Components/PlayerCombatComponent.h"
 
 #include <Camera/CameraComponent.h>
+#include <Net/UnrealNetwork.h>
 
 UFirearm::UFirearm()
 {
@@ -33,8 +34,21 @@ void UFirearm::InitFirearm()
 
 	for (auto& ammoDefinition : requiredAmmoTypes) 
 	{
-		ContainedAmmo.Add(ammoDefinition, AmmoCapacity);
+		ContainedAmmo.Add(FAmmoContainer(ammoDefinition, AmmoCapacity));
 	}
+}
+
+void UFirearm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UFirearm, OwnerPlayerPawn);
+	DOREPLIFETIME(UFirearm, FirearmDefinition);
+	DOREPLIFETIME(UFirearm, Damage);
+	DOREPLIFETIME(UFirearm, FireRate);
+	DOREPLIFETIME(UFirearm, AmmoCapacity);
+	DOREPLIFETIME(UFirearm, AmmoReloadTime);
+	DOREPLIFETIME(UFirearm, ContainedAmmo);
 }
 
 void UFirearm::SetFirearmDefinition(UFirearmDefinition* NewFirearmDefinition)
@@ -84,12 +98,12 @@ APlayerPawn* UFirearm::GetOwnerPlayerPawn() const
 
 bool UFirearm::CanConsumeAmmo(UAmmoDefinition* AmmoDefinition, int AmmoAmount)
 {
-	int* ammoAmount = ContainedAmmo.Find(AmmoDefinition);
+	FAmmoContainer* container = FAmmoContainer::FindAmmoContainer(ContainedAmmo, AmmoDefinition);
 
-	if (!ammoAmount)
+	if (!container)
 		return false;
 
-	if (*ammoAmount < AmmoAmount)
+	if (container->AmmoAmount < AmmoAmount)
 		return false;
 
 	return true;
@@ -99,7 +113,7 @@ bool UFirearm::ConsumeAmmo(UAmmoDefinition* AmmoDefinition, int AmmoAmount)
 {
 	if (CanConsumeAmmo(AmmoDefinition, AmmoAmount))
 	{
-		*ContainedAmmo.Find(AmmoDefinition) -= AmmoAmount;
+		FAmmoContainer::FindAmmoContainer(ContainedAmmo, AmmoDefinition)->AmmoAmount -= AmmoAmount;
 		return true;
 	}
 
@@ -108,10 +122,10 @@ bool UFirearm::ConsumeAmmo(UAmmoDefinition* AmmoDefinition, int AmmoAmount)
 
 bool UFirearm::CanReloadAmmo()
 {
-	for (auto& ammo : ContainedAmmo) 
+	for (FAmmoContainer& container : ContainedAmmo) 
 	{
-		const bool notFull = ammo.Value < AmmoCapacity;
-		const bool haveFreeAmmo = OwnerPlayerPawn->GetPlayerCombatComponent()->GetAmmoAmount(ammo.Key) > 0;
+		const bool notFull = container.AmmoAmount < AmmoCapacity;
+		const bool haveFreeAmmo = OwnerPlayerPawn->GetPlayerCombatComponent()->GetAmmoAmount(container.AmmoDefinition) > 0;
 		if (notFull && haveFreeAmmo)
 			return true;
 	}
@@ -121,16 +135,16 @@ bool UFirearm::CanReloadAmmo()
 
 void UFirearm::ReloadAmmo()
 {
-	for (auto& ammo : ContainedAmmo) 
+	for (FAmmoContainer& container : ContainedAmmo)
 	{
-		const int availableAmmo = OwnerPlayerPawn->GetPlayerCombatComponent()->GetAmmoAmount(ammo.Key);
-		const int needAmmo = AmmoCapacity - ammo.Value;
+		const int availableAmmo = OwnerPlayerPawn->GetPlayerCombatComponent()->GetAmmoAmount(container.AmmoDefinition);
+		const int needAmmo = AmmoCapacity - container.AmmoAmount;
 		const int ammoToConsume = FMath::Min(availableAmmo, needAmmo);
 
-		if (!OwnerPlayerPawn->GetPlayerCombatComponent()->ConsumeAmmo(ammo.Key, ammoToConsume))
+		if (!OwnerPlayerPawn->GetPlayerCombatComponent()->ConsumeAmmo(container.AmmoDefinition, ammoToConsume))
 			continue;
 		
-		ammo.Value += ammoToConsume;
+		container.AmmoAmount += ammoToConsume;
 
 		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Consumed ammo");
 	}

@@ -5,10 +5,14 @@
 #include "../../CombatSystem/AmmoDefinition.h"
 
 #include <Camera/CameraComponent.h>
+#include <Net/UnrealNetwork.h>
+#include <Engine/ActorChannel.h>
 
 UPlayerCombatComponent::UPlayerCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	SetIsReplicated(true);
 
 	CurrentFirearmIndex = 0;
 }
@@ -63,7 +67,10 @@ void UPlayerCombatComponent::HandleInput()
 		if (!currentFirearm->GetIsAutoFireMode())
 			playerInput.bFireWeapon = false;
 
-		currentFirearm->Fire();
+		if (PlayerPawn->HasAuthority())
+			currentFirearm->Fire();
+		else
+			Fire_ServerRPC();
 	}
 
 	if (playerInput.bAlternativeWeaponAction) 
@@ -168,39 +175,39 @@ bool UPlayerCombatComponent::AddAmmo(UAmmoDefinition* AmmoDefinition, int AmmoAm
 	if (!AmmoDefinition)
 		return false;
 
-	int* ammoAmount = ContainedAmmo.Find(AmmoDefinition);
+	FAmmoContainer* container = FAmmoContainer::FindAmmoContainer(ContainedAmmo, AmmoDefinition);
 
-	if (ammoAmount) 
+	if (container)
 	{
-		if (*ammoAmount >= AmmoDefinition->GetMaxAmount()) 
+		if (container->AmmoAmount >= AmmoDefinition->GetMaxAmount())
 			return false;
 		
-		*ammoAmount = FMath::Min(AmmoDefinition->GetMaxAmount(), *ammoAmount + AmmoAmount);
+		container->AmmoAmount = FMath::Min(AmmoDefinition->GetMaxAmount(), container->AmmoAmount + AmmoAmount);
 		return true;
 	}
 
-	ContainedAmmo.Add(AmmoDefinition, FMath::Min(AmmoDefinition->GetMaxAmount(), AmmoAmount));
+	ContainedAmmo.Add(FAmmoContainer(AmmoDefinition, FMath::Min(AmmoDefinition->GetMaxAmount(), AmmoAmount)));
 	return true;
 }
 
 int UPlayerCombatComponent::GetAmmoAmount(UAmmoDefinition* AmmoDefinition) const
 {
-	const int* ammoAmountPtr = ContainedAmmo.Find(AmmoDefinition);
+	const FAmmoContainer* container = FAmmoContainer::FindAmmoContainer(ContainedAmmo, AmmoDefinition);
 
-	if (ammoAmountPtr)
-		return *ammoAmountPtr;
+	if (container)
+		return container->AmmoAmount;
 
 	return 0;
 }
 
 bool UPlayerCombatComponent::CanConsumeAmmo(UAmmoDefinition* AmmoDefinition, int AmmoAmount)
 {
-	int* ammoAmount = ContainedAmmo.Find(AmmoDefinition);
+	FAmmoContainer* container = FAmmoContainer::FindAmmoContainer(ContainedAmmo, AmmoDefinition);
 
-	if (!ammoAmount)
+	if (!container)
 		return false;
 
-	if (*ammoAmount < AmmoAmount)
+	if (container->AmmoAmount < AmmoAmount)
 		return false;
 
 	return true;
@@ -210,9 +217,40 @@ bool UPlayerCombatComponent::ConsumeAmmo(UAmmoDefinition* AmmoDefinition, int Am
 {
 	if (CanConsumeAmmo(AmmoDefinition, AmmoAmount))
 	{
-		*ContainedAmmo.Find(AmmoDefinition) -= AmmoAmount;
+		FAmmoContainer::FindAmmoContainer(ContainedAmmo, AmmoDefinition)->AmmoAmount -= AmmoAmount;
 		return true;
 	}
 
 	return false;
+}
+
+void UPlayerCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPlayerCombatComponent, HeldFirearms);
+	DOREPLIFETIME(UPlayerCombatComponent, ContainedAmmo);
+}
+
+bool UPlayerCombatComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool wroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	for (auto& firearm : HeldFirearms)
+	{
+		wroteSomething |= firearm->ReplicateSubobjects(Channel, Bunch, RepFlags);
+		wroteSomething |= Channel->ReplicateSubobject(firearm, *Bunch, *RepFlags);
+	}
+
+	return wroteSomething;
+}
+
+void UPlayerCombatComponent::Fire_ServerRPC_Implementation()
+{
+	UFirearm* currentFirearm = GetCurrentFirearm();
+
+	if (!currentFirearm)
+		return;
+
+	currentFirearm->Fire();
 }

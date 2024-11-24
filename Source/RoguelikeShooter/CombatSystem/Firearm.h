@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "../ExtendedEngine/NetworkObject.h"
+#include "AmmoContainer.h"
 #include "Firearm.generated.h"
 
 UCLASS(EditInlineNew)
@@ -15,26 +16,26 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
 	TWeakObjectPtr<class APlayerPawn> OwnerPlayerPawn;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	class UFirearmDefinition* FirearmDefinition;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	float Damage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	float FireRate;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	int AmmoCapacity;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	float AmmoReloadTime;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TMap<class UAmmoDefinition*, int> ContainedAmmo;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
+	TArray<FAmmoContainer> ContainedAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float NextTimeToFire;
@@ -43,6 +44,8 @@ protected:
 	bool bIsAutoFireMode;
 
 	void InitFirearm();
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
 

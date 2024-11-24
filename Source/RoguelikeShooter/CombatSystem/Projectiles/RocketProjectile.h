@@ -30,6 +30,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BaseExplosionImpulse;
 
+	UPROPERTY(VisibleAnywhere, Replicated)
+	FVector Location_Replicated;
+
+	void BeginPlay() override;
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 public:
 
 	void Tick(float DeltaTime) override;
