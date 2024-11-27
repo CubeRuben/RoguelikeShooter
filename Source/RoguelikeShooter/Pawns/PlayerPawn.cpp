@@ -64,14 +64,44 @@ void APlayerPawn::Tick(float DeltaTime)
 
 }
 
+FVector APlayerPawn::GetClientLocation() const
+{
+	if (HasAuthority())
+		return GetActorLocation();
+
+	return MovementComponent->GetReplicatedLocation();
+}
+
+FRotator APlayerPawn::GetClientRotation() const
+{
+	if (HasAuthority())
+		return GetActorRotation();
+
+	return FRotator(0.0f, MovementComponent->GetReplicatedRotation(), 0.0f);
+}
+
+FVector APlayerPawn::GetClientCameraLocation() const
+{
+	if (HasAuthority())
+		return PlayerCamera->GetComponentLocation();
+
+	return MovementComponent->GetReplicatedLocation() + PlayerCamera->GetRelativeLocation();
+}
+
+FRotator APlayerPawn::GetClientCameraRotation() const
+{
+	if (HasAuthority())
+		return PlayerCamera->GetComponentRotation();
+
+	return FRotator(0.0f, MovementComponent->GetReplicatedRotation(), 0.0f) + PlayerCamera->GetRelativeRotation();
+}
+
 void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	if (!PlayerInputComponent)
 		return;
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Called");
 
 	PlayerInputComponent->BindAxis("MouseX", this, &APlayerPawn::InputMouseXAxis);
 	PlayerInputComponent->BindAxis("MouseY", this, &APlayerPawn::InputMouseYAxis);

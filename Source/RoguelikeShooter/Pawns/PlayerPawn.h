@@ -77,6 +77,12 @@ public:
 
 	FPlayerInput& GetPlayerInput() { return PlayerInput; }
 
+	// Used for reading real client-side player transform for server
+	FVector GetClientLocation() const;
+	FRotator GetClientRotation() const;
+	FVector GetClientCameraLocation() const;
+	FRotator GetClientCameraRotation() const;
+
 	// IDamageable Interface
 	void ApplyDamage(float DamageAmount, FDamageParams* DamageParams = nullptr) override;
 	void ApplyImpulse(FVector Impulse) override;

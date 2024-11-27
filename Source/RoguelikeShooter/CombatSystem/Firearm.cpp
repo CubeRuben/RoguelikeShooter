@@ -63,7 +63,7 @@ FVector UFirearm::GetShootingOffset() const
 	if (!OwnerPlayerPawn.IsValid())
 		return FirearmDefinition->GetShootingOffset();
 
-	return OwnerPlayerPawn->GetCameraComponent()->GetComponentRotation().RotateVector(FirearmDefinition->GetShootingOffset());
+	return OwnerPlayerPawn->GetClientCameraRotation().RotateVector(FirearmDefinition->GetShootingOffset());
 }
 
 bool UFirearm::Fire()

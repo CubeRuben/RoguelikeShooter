@@ -15,8 +15,7 @@ UFirearmHitscanFire::UFirearmHitscanFire()
 void UFirearmHitscanFire::OnFire(UFirearm* Firearm, FVector ShootingDirection)
 {
 	APlayerPawn* playerPawn = Firearm->GetOwnerPlayerPawn();
-	const UCameraComponent* cameraComponent = playerPawn->GetCameraComponent();
-	const FVector startPosition = cameraComponent->GetComponentLocation() + Firearm->GetShootingOffset();
+	const FVector startPosition = playerPawn->GetClientCameraLocation() + Firearm->GetShootingOffset();
 	const FVector endPosition = startPosition + ShootingDirection * HitMaxDistance;
 
 	FCollisionQueryParams params;

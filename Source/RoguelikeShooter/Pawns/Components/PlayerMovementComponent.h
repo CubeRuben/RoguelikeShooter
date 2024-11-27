@@ -101,6 +101,9 @@ public:
 
 	FVector GetMovementInput();
 
+	FVector GetReplicatedLocation() const { return Velocity_Replicated; };
+	float GetReplicatedRotation() const { return PawnRotation_Replicated; };
+
 	void SwitchToState(EMovementState NewState);
 
 	bool CanStayOnSurface(FVector Normal);
@@ -110,7 +113,7 @@ public:
 	void SweepGround(float Height, FHitResult& OutHit);
 
 	UFUNCTION(Server, Unreliable)
-	void ReplicateMovement_ServerRPC(FVector Location, FVector PawnVelocity, float PawnRotation, EMovementState MovementStateType);
-	void ReplicateMovement_ServerRPC_Implementation(FVector Location, FVector PawnVelocity, float PawnRotation, EMovementState MovementStateType);
+	void ReplicateMovement_ServerRPC(FVector Location, FVector PawnVelocity, float PawnRotation, float CameraRotation, EMovementState MovementStateType);
+	void ReplicateMovement_ServerRPC_Implementation(FVector Location, FVector PawnVelocity, float PawnRotation, float CameraRotation, EMovementState MovementStateType);
 
 };

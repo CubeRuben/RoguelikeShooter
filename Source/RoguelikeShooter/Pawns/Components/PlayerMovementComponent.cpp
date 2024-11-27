@@ -69,7 +69,7 @@ void UPlayerMovementComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	{
 		LocalPlayerTick(DeltaTime);
 
-		ReplicateMovement_ServerRPC(PlayerPawn->GetActorLocation(), Velocity, PlayerPawn->GetActorRotation().Yaw, CurrentMovementStateType);
+		ReplicateMovement_ServerRPC(PlayerPawn->GetActorLocation(), Velocity, PlayerPawn->GetActorRotation().Yaw, PlayerPawn->GetCameraComponent()->GetRelativeRotation().Pitch, CurrentMovementStateType);
 	}
 	else 
 	{
@@ -199,12 +199,16 @@ void UPlayerMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	DOREPLIFETIME(UPlayerMovementComponent, CurrentMovementState_Replicated);
 }
 
-void UPlayerMovementComponent::ReplicateMovement_ServerRPC_Implementation(FVector Location, FVector PawnVelocity, float PawnRotation, EMovementState MovementStateType)
+void UPlayerMovementComponent::ReplicateMovement_ServerRPC_Implementation(FVector Location, FVector PawnVelocity, float PawnRotation, float CameraRotation, EMovementState MovementStateType)
 {
 	Location_Replicated = Location;
 	Velocity_Replicated = PawnVelocity;
 	PawnRotation_Replicated = PawnRotation;
 	CurrentMovementState_Replicated = MovementStateType;
+
+	UCameraComponent* playerCamera = PlayerPawn->GetCameraComponent();
+	const float clampedAngle = FMath::Clamp(CameraRotation, -85.0f, 85.0f);
+	playerCamera->SetRelativeRotation(FRotator(clampedAngle, 0.0f, 0.0f));
 }
 
 
