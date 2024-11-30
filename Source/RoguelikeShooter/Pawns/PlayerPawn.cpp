@@ -66,7 +66,7 @@ void APlayerPawn::Tick(float DeltaTime)
 
 FVector APlayerPawn::GetClientLocation() const
 {
-	if (HasAuthority())
+	if (IsLocallyControlled())
 		return GetActorLocation();
 
 	return MovementComponent->GetReplicatedLocation();
@@ -74,7 +74,7 @@ FVector APlayerPawn::GetClientLocation() const
 
 FRotator APlayerPawn::GetClientRotation() const
 {
-	if (HasAuthority())
+	if (IsLocallyControlled())
 		return GetActorRotation();
 
 	return FRotator(0.0f, MovementComponent->GetReplicatedRotation(), 0.0f);
@@ -82,7 +82,7 @@ FRotator APlayerPawn::GetClientRotation() const
 
 FVector APlayerPawn::GetClientCameraLocation() const
 {
-	if (HasAuthority())
+	if (IsLocallyControlled())
 		return PlayerCamera->GetComponentLocation();
 
 	return MovementComponent->GetReplicatedLocation() + PlayerCamera->GetRelativeLocation();
@@ -90,7 +90,7 @@ FVector APlayerPawn::GetClientCameraLocation() const
 
 FRotator APlayerPawn::GetClientCameraRotation() const
 {
-	if (HasAuthority())
+	if (IsLocallyControlled())
 		return PlayerCamera->GetComponentRotation();
 
 	return FRotator(0.0f, MovementComponent->GetReplicatedRotation(), 0.0f) + PlayerCamera->GetRelativeRotation();

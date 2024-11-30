@@ -4,6 +4,9 @@
 
 AExplosiveBarrel::AExplosiveBarrel()
 {
+	bReplicates = true;
+	SetReplicateMovement(true);
+
 	MinTimeForExplosion = 0.5f;
 	MaxTimeForExplosion = 5.0f;
 }

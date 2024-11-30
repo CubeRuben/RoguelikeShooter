@@ -67,9 +67,9 @@ void UPlayerCombatComponent::HandleInput()
 		if (!currentFirearm->GetIsAutoFireMode())
 			playerInput.bFireWeapon = false;
 
-		if (PlayerPawn->HasAuthority())
-			currentFirearm->Fire();
-		else
+		currentFirearm->Fire();
+
+		if (!PlayerPawn->HasAuthority())
 			Fire_ServerRPC();
 	}
 
@@ -120,6 +120,9 @@ void UPlayerCombatComponent::StartReloading()
 
 	ReloadingTimer = currentFirearm->GetAmmoReloadTime();
 	bIsReloading = true;
+
+	if (PlayerPawn->IsLocallyControlled() && !PlayerPawn->HasAuthority())
+		ReloadAmmo_ServerRPC();
 }
 
 void UPlayerCombatComponent::StopReloading()
@@ -253,4 +256,9 @@ void UPlayerCombatComponent::Fire_ServerRPC_Implementation()
 		return;
 
 	currentFirearm->Fire();
+}
+
+void UPlayerCombatComponent::ReloadAmmo_ServerRPC_Implementation()
+{
+	StartReloading();
 }

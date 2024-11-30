@@ -25,4 +25,5 @@ public:
 
 	virtual void InitProjectile(FVector Direction, float Damage, AActor* ShooterActor);
 
+	bool IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const override;
 };

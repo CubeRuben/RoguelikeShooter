@@ -15,7 +15,7 @@ void UFirearmProjectileFire::OnFire(UFirearm* Firearm, FVector ShootingDirection
 {
 	UWorld* world = Firearm->GetWorld();
 	
-	const FVector startPosition = Firearm->GetOwnerPlayerPawn()->GetClientLocation() + Firearm->GetShootingOffset();
+	const FVector startPosition = Firearm->GetOwnerPlayerPawn()->GetClientCameraLocation() + Firearm->GetShootingOffset();
 	
 	FActorSpawnParameters params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

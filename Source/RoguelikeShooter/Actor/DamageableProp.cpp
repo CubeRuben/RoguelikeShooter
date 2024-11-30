@@ -2,7 +2,8 @@
 
 ADamageableProp::ADamageableProp()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
+	SetReplicateMovement(true);
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh Component"));
 	StaticMeshComponent->SetSimulatePhysics(true);

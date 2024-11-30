@@ -101,7 +101,7 @@ public:
 
 	FVector GetMovementInput();
 
-	FVector GetReplicatedLocation() const { return Velocity_Replicated; };
+	FVector GetReplicatedLocation() const { return Location_Replicated; };
 	float GetReplicatedRotation() const { return PawnRotation_Replicated; };
 
 	void SwitchToState(EMovementState NewState);

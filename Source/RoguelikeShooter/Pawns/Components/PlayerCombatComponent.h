@@ -65,4 +65,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Fire_ServerRPC();
 	void Fire_ServerRPC_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void ReloadAmmo_ServerRPC();
+	void ReloadAmmo_ServerRPC_Implementation();
+
 };
