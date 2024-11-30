@@ -37,6 +37,10 @@ void SIdleState::UpdateVelocity(float DeltaTime)
 {
 	const FVector deltaVelocity = MovementComponent->Velocity * MovementComponent->GetMovementAttributes().StoppingAcceleration * DeltaTime;
 
+	//const float dot = FVector::DotProduct(MovementComponent->Velocity.GetSafeNormal2D(), deltaVelocity.GetSafeNormal2D());
+	//
+	//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::SanitizeFloat(dot));
+
 	if (deltaVelocity.SizeSquared() < 1.0f)
 	{
 		MovementComponent->Velocity = FVector::ZeroVector;

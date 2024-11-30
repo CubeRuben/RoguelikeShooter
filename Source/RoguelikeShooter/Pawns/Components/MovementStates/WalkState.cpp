@@ -36,9 +36,17 @@ void SWalkState::UpdateVelocity(float DeltaTime)
 {
 	const FVector targetVelocity = MovementComponent->GetMovementInput() * GetTargetSpeed();
 	const FVector projectedVelocity(MovementComponent->Velocity.X, MovementComponent->Velocity.Y, 0.0f);
-	const FVector deltaVelocity = (targetVelocity - projectedVelocity) * MovementComponent->GetMovementAttributes().Acceleration * DeltaTime;
+	const FVector changeVelocity = targetVelocity - projectedVelocity;
+	const FVector deltaVelocity = changeVelocity * MovementComponent->GetMovementAttributes().Acceleration * DeltaTime;
 
-	MovementComponent->Velocity += deltaVelocity;
+	if (changeVelocity.SizeSquared() <= deltaVelocity.SizeSquared()) 
+	{
+		MovementComponent->Velocity += changeVelocity;
+	}
+	else 
+	{
+		MovementComponent->Velocity += deltaVelocity;
+	}
 }
 
 float SWalkState::GetTargetSpeed()

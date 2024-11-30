@@ -93,11 +93,11 @@ void UPlayerMovementComponent::ReplicatedPlayerTick(float DeltaTime)
 	CurrentMovementStateType = CurrentMovementState_Replicated;
 
 	const FVector location = PlayerPawn->GetActorLocation();
-	const FVector newLocation = FMath::VInterpTo(location, Location_Replicated, DeltaTime, 15.0f);
+	const FVector newLocation = FMath::Lerp(location, Location_Replicated, FMath::Pow(0.5f, DeltaTime * 15.0f));
 
 	const FRotator rotation = PlayerPawn->GetActorRotation();
-	const FRotator newRotation = FMath::RInterpTo(rotation, FRotator(0.0f, PawnRotation_Replicated, 0.0f), DeltaTime, 15.0f);
-
+	const FRotator newRotation = FMath::Lerp(rotation, FRotator(0.0f, PawnRotation_Replicated, 0.0f), FMath::Pow(0.5f, DeltaTime * 15.0f));
+	;
 	PlayerPawn->SetActorLocation(newLocation);
 	PlayerPawn->SetActorRotation(newRotation);
 }
