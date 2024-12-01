@@ -59,12 +59,15 @@ void ARocketProjectile::Tick(float DeltaTime)
 		return;
 	}
 
-	FActorSpawnParameters spawnParams;
-	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	AExplosion* explosion = GetWorld()->SpawnActor<AExplosion>(AExplosion::StaticClass(), GetActorLocation(), FRotator::ZeroRotator, spawnParams);
-	
-	if (explosion)
-		explosion->InitExplosion(this, BaseDamage, 7.0f * 100.0f, BaseExplosionImpulse);
+	if (OwnerActor->HasAuthority()) 
+	{
+		FActorSpawnParameters spawnParams;
+		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		AExplosion* explosion = GetWorld()->SpawnActor<AExplosion>(AExplosion::StaticClass(), GetActorLocation(), FRotator::ZeroRotator, spawnParams);
+		
+		if (explosion)
+			explosion->InitExplosion(this, BaseDamage, 7.0f * 100.0f, BaseExplosionImpulse);
+	}
 
 	Destroy();
 }

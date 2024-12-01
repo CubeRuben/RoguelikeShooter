@@ -112,4 +112,8 @@ public:
 	void InputMouseXAxis(float Value) { PlayerInput.MouseX = Value; };
 	void InputMouseYAxis(float Value) { PlayerInput.MouseY = Value; };
 	void InputMouseWheelAxis(float Value) { PlayerInput.MouseWheel = Value; };
+
+	UFUNCTION(Client, Reliable)
+	void ApplyImpulse_ClientRPC(FVector Impulse);
+	void ApplyImpulse_ClientRPC_Implementation(FVector Impulse);
 };

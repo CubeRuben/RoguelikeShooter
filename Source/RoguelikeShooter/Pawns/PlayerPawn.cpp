@@ -56,6 +56,9 @@ void APlayerPawn::ApplyDamage(float DamageAmount, FDamageParams* DamageParams)
 void APlayerPawn::ApplyImpulse(FVector Impulse)
 {
 	MovementComponent->Velocity += Impulse / 100.0f;
+
+	if (HasAuthority() && !IsLocallyControlled())
+		ApplyImpulse_ClientRPC(Impulse);
 }
 
 void APlayerPawn::Tick(float DeltaTime)
@@ -125,3 +128,7 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	INPUT_BIND(Reload);
 }
 
+void APlayerPawn::ApplyImpulse_ClientRPC_Implementation(FVector Impulse)
+{
+	ApplyImpulse(Impulse);
+}
