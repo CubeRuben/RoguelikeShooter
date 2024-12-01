@@ -111,6 +111,7 @@ public:
 	void Jump();
 
 	void SweepGround(float Height, FHitResult& OutHit);
+	void SweepMovementCollider(FVector StartOffset, FVector EndOffset, FHitResult& OutHit);
 
 	UFUNCTION(Server, Unreliable)
 	void ReplicateMovement_ServerRPC(FVector Location, FVector PawnVelocity, float PawnRotation, float CameraRotation, EMovementState MovementStateType);

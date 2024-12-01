@@ -155,6 +155,16 @@ void UPlayerMovementComponent::SweepGround(float Height, FHitResult& OutHit)
 	GetWorld()->SweepSingleByProfile(OutHit, componentLocation, endLocation, FQuat::Identity, collider->GetCollisionProfileName(), customCollisionShape, collisionParams);
 }
 
+void UPlayerMovementComponent::SweepMovementCollider(FVector StartOffset, FVector EndOffset, FHitResult& OutHit)
+{
+	FCollisionQueryParams collisionParams;
+	collisionParams.AddIgnoredActor(PlayerPawn);
+
+	UCapsuleComponent* collider = PlayerPawn->GetCapsuleComponent();
+
+	GetWorld()->SweepSingleByProfile(OutHit, collider->GetComponentLocation() + StartOffset, collider->GetComponentLocation() + EndOffset, FQuat::Identity, collider->GetCollisionProfileName(), collider->GetCollisionShape(), collisionParams);
+}
+
 void UPlayerMovementComponent::HandleInput(float DeltaTime)
 {
 	FPlayerInput& playerInput = PlayerPawn->GetPlayerInput();

@@ -5,6 +5,54 @@
 
 SBaseGroundedState::SBaseGroundedState(UPlayerMovementComponent* NewMovementComponent) : SBaseState(NewMovementComponent) {}
 
+bool SBaseGroundedState::StepUp(const FVector& MovementDelta)
+{
+	static const float MaxStepUpHeight = 20;
+	static const float SpaceForStepUp = 10;
+
+	float availableStepUpHeight = MaxStepUpHeight;
+
+	FHitResult ceilingHit;
+
+	FVector moveDelta = MovementDelta * FVector(1, 1, 0);
+
+	MovementComponent->SweepMovementCollider(FVector::ZeroVector, FVector(0, 0, availableStepUpHeight), ceilingHit);
+
+	if (ceilingHit.bBlockingHit)
+	{
+		availableStepUpHeight = ceilingHit.Distance;
+	}
+
+	FHitResult wallHit;
+
+	MovementComponent->SweepMovementCollider(FVector(0, 0, availableStepUpHeight), FVector(0, 0, availableStepUpHeight) + moveDelta, wallHit);
+
+	if (wallHit.bBlockingHit)
+	{
+		if (wallHit.Distance <= SpaceForStepUp)
+		{
+			return false;
+		}
+	}
+
+	FHitResult floorHit;
+
+	MovementComponent->SweepMovementCollider(FVector(0, 0, availableStepUpHeight) + moveDelta * wallHit.Time, moveDelta * wallHit.Time, floorHit);
+
+	if (floorHit.bBlockingHit)
+	{
+		if (!MovementComponent->CanStayOnSurface(floorHit.ImpactNormal))
+		{
+			return false;
+		}
+
+		MovementComponent->GetPlayerPawn()->SetActorLocation(floorHit.Location + FVector(0, 0, 1));
+		return true;
+	}
+
+	return false;
+}
+
 void SBaseGroundedState::OnStateEnter()
 {
 	MovementComponent->Velocity.Z = 0.0f;
@@ -31,7 +79,8 @@ void SBaseGroundedState::Tick(float DeltaTime)
 
 	if (moveHit.bBlockingHit)
 	{
-		MovementComponent->SlideAlongSurface(movementDelta, 1.0f - moveHit.Time, moveHit.ImpactNormal, moveHit);
+		if (!StepUp(movementDelta))
+			MovementComponent->SlideAlongSurface(movementDelta, 1.0f - moveHit.Time, moveHit.ImpactNormal, moveHit);
 	}
 
 	// Check ground

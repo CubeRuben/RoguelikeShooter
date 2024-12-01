@@ -9,6 +9,12 @@ public:
 
     SBaseGroundedState(class UPlayerMovementComponent* NewMovementComponent);
 
+protected:
+
+    bool StepUp(const FVector& MovementDelta);
+
+public:
+
     void OnStateEnter() override;
 
     void Tick(float DeltaTime) override;
