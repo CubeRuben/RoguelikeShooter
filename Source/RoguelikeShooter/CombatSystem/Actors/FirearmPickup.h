@@ -19,6 +19,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UStaticMeshComponent* FirearmMeshComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UWidgetComponent* FirearmWidgetComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UFirearmDescriptionWidget* FirearmWidget;
+
 	UPROPERTY(EditAnywhere, Instanced)
 	TObjectPtr<class UFirearm> Firearm;
 
@@ -31,6 +37,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Interact(class APlayerPawn* Pawn) override;
+
+	void StartHovering() override;
+	void StopHovering() override;
 
 #if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);

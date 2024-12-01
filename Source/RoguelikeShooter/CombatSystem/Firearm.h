@@ -5,7 +5,7 @@
 #include "AmmoContainer.h"
 #include "Firearm.generated.h"
 
-UCLASS(EditInlineNew)
+UCLASS(EditInlineNew, BlueprintType)
 class ROGUELIKESHOOTER_API UFirearm : public UNetworkObject
 {
 	GENERATED_BODY()
@@ -21,6 +21,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	class UFirearmDefinition* FirearmDefinition;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
+	FString Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	float Damage;

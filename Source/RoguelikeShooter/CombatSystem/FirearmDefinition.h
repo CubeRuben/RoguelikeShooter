@@ -64,6 +64,9 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere)
+	FString Name;
+
+	UPROPERTY(EditAnywhere)
 	FRandomFloatProperty Damage;
 
 	UPROPERTY(EditAnywhere)
@@ -86,6 +89,7 @@ protected:
 
 public:
 
+	FString GetName() const { return Name; };
 	float GetDamage() const { return Damage.GetRandomValue(); }
 	float GetFireRate() const { return FireRate.GetRandomValue(); }
 	int GetAmmoCapacity() const { return AmmoCapacity.GetRandomValue(); }

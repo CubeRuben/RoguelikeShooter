@@ -24,6 +24,7 @@ void UFirearm::InitFirearm()
 	if (!FirearmDefinition)
 		return;
 
+	Name = FirearmDefinition->GetName();
 	Damage = FirearmDefinition->GetDamage();
 	FireRate = FirearmDefinition->GetFireRate();
 	AmmoCapacity = FirearmDefinition->GetAmmoCapacity();
@@ -44,6 +45,7 @@ void UFirearm::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 
 	DOREPLIFETIME(UFirearm, OwnerPlayerPawn);
 	DOREPLIFETIME(UFirearm, FirearmDefinition);
+	DOREPLIFETIME(UFirearm, Name);
 	DOREPLIFETIME(UFirearm, Damage);
 	DOREPLIFETIME(UFirearm, FireRate);
 	DOREPLIFETIME(UFirearm, AmmoCapacity);

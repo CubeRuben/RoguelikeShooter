@@ -4,6 +4,9 @@
 #include "../FirearmDefinition.h"
 #include "../../Pawns/PlayerPawn.h"
 #include "../../Pawns/Components/PlayerCombatComponent.h"
+#include "../../UI/FirearmDescriptionWidget.h"
+
+#include <Components/WidgetComponent.h>
 
 AFirearmPickup::AFirearmPickup()
 {
@@ -14,6 +17,17 @@ AFirearmPickup::AFirearmPickup()
 	FirearmMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Firearm Mesh Component"));
 	FirearmMeshComponent->SetSimulatePhysics(true);
 	RootComponent = FirearmMeshComponent;
+
+	FirearmWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Firearm Widget Component"));
+	FirearmWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	FirearmWidgetComponent->SetDrawAtDesiredSize(true);
+	FirearmWidgetComponent->SetupAttachment(RootComponent);
+	FirearmWidgetComponent->SetRelativeLocation(FVector(0.0f, 0.0f, 50.0f));
+
+	ConstructorHelpers::FClassFinder<UFirearmDescriptionWidget> FirearmWidgetClass(TEXT("/Game/UI/UW_FirearmDescriptionWorld"));
+
+	if (FirearmWidgetClass.Class)
+		FirearmWidgetComponent->SetWidgetClass(FirearmWidgetClass.Class);
 }
 
 void AFirearmPickup::BeginPlay()
@@ -21,6 +35,11 @@ void AFirearmPickup::BeginPlay()
 	Super::BeginPlay();
 	
 	InitPickup();
+
+	FirearmWidget = Cast<UFirearmDescriptionWidget>(FirearmWidgetComponent->GetWidget());
+
+	if (FirearmWidget)
+		FirearmWidget->InitFirearm(Firearm);
 }
 
 void AFirearmPickup::InitPickup()
@@ -47,6 +66,18 @@ void AFirearmPickup::Interact(APlayerPawn* Pawn)
 
 	Pawn->GetPlayerCombatComponent()->AddFirearm(Firearm);
 	Destroy();
+}
+
+void AFirearmPickup::StartHovering()
+{
+	if (FirearmWidget)
+		FirearmWidget->StartHovering();
+}
+
+void AFirearmPickup::StopHovering()
+{
+	if (FirearmWidget)
+		FirearmWidget->StopHovering();
 }
 
 void AFirearmPickup::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
