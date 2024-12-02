@@ -39,7 +39,10 @@ protected:
 	// Delegates
 
 	UPROPERTY(BlueprintAssignable)
-	FReloadUpdateDelegate ReloadUpdateDelegate;
+	FReloadUpdateDelegate OnReloadStart;
+
+	UPROPERTY(BlueprintAssignable)
+	FReloadUpdateDelegate OnReloadStop;
 
 	virtual void BeginPlay() override;
 
@@ -62,6 +65,9 @@ public:
 	void AddFirearm(class UFirearm* NewFirearm);
 
 	void SetCurrentFirearm(int Index);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	float GetReloadTimerRatio();
 
 	bool AddAmmo(class UAmmoDefinition* AmmoDefinition, int AmmoAmount);
 	int GetAmmoAmount(class UAmmoDefinition* AmmoDefinition) const;

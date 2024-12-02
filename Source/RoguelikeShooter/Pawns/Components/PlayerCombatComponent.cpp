@@ -103,7 +103,7 @@ void UPlayerCombatComponent::UpdateReloading(float DeltaTime)
 
 	ReloadingTimer -= DeltaTime;
 
-	if (ReloadingTimer > 0)
+	if (ReloadingTimer > 0.0f)
 		return;
 	
 	GetCurrentFirearm()->ReloadAmmo();
@@ -120,6 +120,7 @@ void UPlayerCombatComponent::StartReloading()
 
 	ReloadingTimer = currentFirearm->GetAmmoReloadTime();
 	bIsReloading = true;
+	OnReloadStart.Broadcast();
 
 	if (PlayerPawn->IsLocallyControlled() && !PlayerPawn->HasAuthority())
 		ReloadAmmo_ServerRPC();
@@ -129,6 +130,7 @@ void UPlayerCombatComponent::StopReloading()
 {
 	ReloadingTimer = 0.0f;
 	bIsReloading = false;
+	OnReloadStop.Broadcast();
 }
 
 UFirearm* UPlayerCombatComponent::GetCurrentFirearm()
@@ -171,6 +173,16 @@ void UPlayerCombatComponent::SetCurrentFirearm(int Index)
 		return;
 
 	CurrentFirearmIndex = Index;
+}
+
+float UPlayerCombatComponent::GetReloadTimerRatio()
+{
+	UFirearm* firearm = GetCurrentFirearm();
+
+	if (firearm)
+		return 1.0f - ReloadingTimer / firearm->GetAmmoReloadTime();
+
+	return 1.0f;
 }
 
 bool UPlayerCombatComponent::AddAmmo(UAmmoDefinition* AmmoDefinition, int AmmoAmount)

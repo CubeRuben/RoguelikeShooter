@@ -33,6 +33,7 @@ void UFirearm::InitFirearm()
 	TSet<UAmmoDefinition*> requiredAmmoTypes;
 	FirearmDefinition->GetRequiredAmmoTypes(requiredAmmoTypes);
 
+	ContainedAmmo.Empty();
 	for (auto& ammoDefinition : requiredAmmoTypes) 
 	{
 		ContainedAmmo.Add(FAmmoContainer(ammoDefinition, AmmoCapacity));
