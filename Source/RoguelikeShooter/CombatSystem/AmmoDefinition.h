@@ -4,7 +4,7 @@
 #include "Engine/DataAsset.h"
 #include "AmmoDefinition.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class ROGUELIKESHOOTER_API UAmmoDefinition : public UDataAsset
 {
 	GENERATED_BODY()

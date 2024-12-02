@@ -5,7 +5,10 @@
 #include "../../CombatSystem/AmmoContainer.h"
 #include "PlayerCombatComponent.generated.h"
 
-UCLASS()
+UDELEGATE(BlueprintAuthorityOnly)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FReloadUpdateDelegate);
+
+UCLASS(BlueprintType)
 class ROGUELIKESHOOTER_API UPlayerCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -32,6 +35,11 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
 	TArray<FAmmoContainer> ContainedAmmo;
+
+	// Delegates
+
+	UPROPERTY(BlueprintAssignable)
+	FReloadUpdateDelegate ReloadUpdateDelegate;
 
 	virtual void BeginPlay() override;
 
