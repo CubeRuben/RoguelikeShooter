@@ -52,6 +52,8 @@ protected:
 	void StartReloading();
 	void StopReloading();
 
+	void DropFirearm(UFirearm* Firearm);
+
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
@@ -83,5 +85,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ReloadAmmo_ServerRPC();
 	void ReloadAmmo_ServerRPC_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void SetFireMode_ServerRPC(bool bFireMode);
+	void SetFireMode_ServerRPC_Implementation(bool bFireMode);
 
 };

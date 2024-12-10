@@ -23,6 +23,7 @@ struct FPlayerInput
 	bool bAlternativeWeaponAction = false;
 	bool bSwitchFireMode = false;
 	bool bReload = false;
+	bool bDropWeapon = false;
 
 	float MouseX = 0.0f;
 	float MouseY = 0.0f;
@@ -108,6 +109,7 @@ public:
 	INPUT_HANDLE(AlternativeWeaponAction);
 	INPUT_HANDLE(SwitchFireMode);
 	INPUT_HANDLE(Reload);
+	INPUT_HANDLE(DropWeapon);
 
 	void InputMouseXAxis(float Value) { PlayerInput.MouseX = Value; };
 	void InputMouseYAxis(float Value) { PlayerInput.MouseY = Value; };

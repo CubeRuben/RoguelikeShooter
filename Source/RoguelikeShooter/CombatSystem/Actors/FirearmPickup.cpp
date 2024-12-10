@@ -53,6 +53,16 @@ void AFirearmPickup::InitPickup()
 	FirearmMeshComponent->SetStaticMesh(Firearm->GetFirearmDefinition()->GetFirearmMesh());
 }
 
+void AFirearmPickup::SetFirearm(UFirearm* NewFirearm)
+{
+	if (!NewFirearm)
+		return;
+	
+	Firearm = NewFirearm;
+
+	InitPickup();
+}
+
 void AFirearmPickup::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

@@ -126,6 +126,7 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	INPUT_BIND(AlternativeWeaponAction);
 	INPUT_BIND(SwitchFireMode);
 	INPUT_BIND(Reload);
+	INPUT_BIND(DropWeapon);
 }
 
 void APlayerPawn::ApplyImpulse_ClientRPC_Implementation(FVector Impulse)

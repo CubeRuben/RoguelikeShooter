@@ -3,6 +3,7 @@
 #include "../PlayerPawn.h"
 #include "../../CombatSystem/Firearm.h"
 #include "../../CombatSystem/AmmoDefinition.h"
+#include "../../CombatSystem/Actors/FirearmPickup.h"
 
 #include <Camera/CameraComponent.h>
 #include <Net/UnrealNetwork.h>
@@ -62,6 +63,13 @@ void UPlayerCombatComponent::HandleInput()
 	if (bIsReloading)
 		return;
 
+	if (playerInput.bDropWeapon) 
+	{
+		playerInput.bDropWeapon = false;
+
+		return;
+	}
+
 	if (playerInput.bFireWeapon) 
 	{
 		if (!currentFirearm->GetIsAutoFireMode())
@@ -85,6 +93,9 @@ void UPlayerCombatComponent::HandleInput()
 		playerInput.bSwitchFireMode = false;
 
 		currentFirearm->SwitchFireMode();
+
+		if (!PlayerPawn->HasAuthority())
+			SetFireMode_ServerRPC(currentFirearm->GetIsAutoFireMode());
 	}
 
 	if (playerInput.bReload) 
@@ -131,6 +142,29 @@ void UPlayerCombatComponent::StopReloading()
 	ReloadingTimer = 0.0f;
 	bIsReloading = false;
 	OnReloadStop.Broadcast();
+}
+
+void UPlayerCombatComponent::DropFirearm(UFirearm* Firearm)
+{
+	if (!Firearm) 
+	{
+		Firearm = GetCurrentFirearm();
+
+		if (!Firearm)
+			return;
+	}
+
+	HeldFirearms.Contains(Firearm);
+
+	FActorSpawnParameters spawnParams;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	AFirearmPickup* firearmPickup = GetWorld()->SpawnActor<AFirearmPickup>(AFirearmPickup::StaticClass(), PlayerPawn->GetClientLocation(), FRotator::ZeroRotator, spawnParams);
+
+	if (!firearmPickup)
+		return;
+
+	firearmPickup->Firearm
 }
 
 UFirearm* UPlayerCombatComponent::GetCurrentFirearm()
@@ -273,4 +307,12 @@ void UPlayerCombatComponent::Fire_ServerRPC_Implementation()
 void UPlayerCombatComponent::ReloadAmmo_ServerRPC_Implementation()
 {
 	StartReloading();
+}
+
+void UPlayerCombatComponent::SetFireMode_ServerRPC_Implementation(bool bFireMode)
+{
+	UFirearm* firearm = GetCurrentFirearm();
+
+	if (firearm)
+		firearm->SetIsAutoFireMode(bFireMode);
 }

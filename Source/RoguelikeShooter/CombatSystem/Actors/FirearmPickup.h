@@ -34,6 +34,8 @@ protected:
 
 public:	
 
+	void SetFirearm(UFirearm* NewFirearm);
+
 	virtual void Tick(float DeltaTime) override;
 
 	void Interact(class APlayerPawn* Pawn) override;
