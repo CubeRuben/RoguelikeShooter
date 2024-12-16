@@ -35,11 +35,6 @@ void AFirearmPickup::BeginPlay()
 	Super::BeginPlay();
 	
 	InitPickup();
-
-	FirearmWidget = Cast<UFirearmDescriptionWidget>(FirearmWidgetComponent->GetWidget());
-
-	if (FirearmWidget)
-		FirearmWidget->InitFirearm(Firearm);
 }
 
 void AFirearmPickup::InitPickup()
@@ -51,6 +46,11 @@ void AFirearmPickup::InitPickup()
 		return;
 
 	FirearmMeshComponent->SetStaticMesh(Firearm->GetFirearmDefinition()->GetFirearmMesh());
+
+	FirearmWidget = Cast<UFirearmDescriptionWidget>(FirearmWidgetComponent->GetWidget());
+
+	if (FirearmWidget)
+		FirearmWidget->InitFirearm(Firearm);
 }
 
 void AFirearmPickup::SetFirearm(UFirearm* NewFirearm)

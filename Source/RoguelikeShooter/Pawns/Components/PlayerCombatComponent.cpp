@@ -67,6 +67,7 @@ void UPlayerCombatComponent::HandleInput()
 	{
 		playerInput.bDropWeapon = false;
 
+		DropFirearm(currentFirearm);
 		return;
 	}
 
@@ -164,7 +165,7 @@ void UPlayerCombatComponent::DropFirearm(UFirearm* Firearm)
 	if (!firearmPickup)
 		return;
 
-	firearmPickup->Firearm
+	firearmPickup->SetFirearm(Firearm);
 }
 
 UFirearm* UPlayerCombatComponent::GetCurrentFirearm()
