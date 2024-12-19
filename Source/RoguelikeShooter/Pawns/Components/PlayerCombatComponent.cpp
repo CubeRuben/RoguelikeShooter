@@ -67,7 +67,11 @@ void UPlayerCombatComponent::HandleInput()
 	{
 		playerInput.bDropWeapon = false;
 
-		DropFirearm(currentFirearm);
+		if (PlayerPawn->HasAuthority())
+			DropFirearm(currentFirearm);
+		else
+			DropFirearm_ServerRPC(currentFirearm);
+
 		return;
 	}
 
@@ -148,12 +152,7 @@ void UPlayerCombatComponent::StopReloading()
 void UPlayerCombatComponent::DropFirearm(UFirearm* Firearm)
 {
 	if (!Firearm) 
-	{
-		Firearm = GetCurrentFirearm();
-
-		if (!Firearm)
 			return;
-	}
 
 	HeldFirearms.Contains(Firearm);
 
@@ -166,6 +165,7 @@ void UPlayerCombatComponent::DropFirearm(UFirearm* Firearm)
 		return;
 
 	firearmPickup->SetFirearm(Firearm);
+	HeldFirearms.Remove(Firearm);
 }
 
 UFirearm* UPlayerCombatComponent::GetCurrentFirearm()
@@ -316,4 +316,9 @@ void UPlayerCombatComponent::SetFireMode_ServerRPC_Implementation(bool bFireMode
 
 	if (firearm)
 		firearm->SetIsAutoFireMode(bFireMode);
+}
+
+void UPlayerCombatComponent::DropFirearm_ServerRPC_Implementation(UFirearm* Firearm)
+{
+	DropFirearm(Firearm);
 }

@@ -25,12 +25,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UFirearmDescriptionWidget* FirearmWidget;
 
-	UPROPERTY(EditAnywhere, Instanced)
+	UPROPERTY(EditAnywhere, Instanced, ReplicatedUsing=InitPickup)
 	TObjectPtr<class UFirearm> Firearm;
 
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
 	void InitPickup();
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 

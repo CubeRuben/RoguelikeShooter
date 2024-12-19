@@ -7,12 +7,14 @@
 #include "../../UI/FirearmDescriptionWidget.h"
 
 #include <Components/WidgetComponent.h>
+#include <Net/UnrealNetwork.h>
 
 AFirearmPickup::AFirearmPickup()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 	bReplicates = true;
+	SetReplicateMovement(true);
 
 	FirearmMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Firearm Mesh Component"));
 	FirearmMeshComponent->SetSimulatePhysics(true);
@@ -51,6 +53,13 @@ void AFirearmPickup::InitPickup()
 
 	if (FirearmWidget)
 		FirearmWidget->InitFirearm(Firearm);
+}
+
+void AFirearmPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AFirearmPickup, Firearm);
 }
 
 void AFirearmPickup::SetFirearm(UFirearm* NewFirearm)

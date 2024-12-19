@@ -90,4 +90,8 @@ public:
 	void SetFireMode_ServerRPC(bool bFireMode);
 	void SetFireMode_ServerRPC_Implementation(bool bFireMode);
 
+	UFUNCTION(Server, Reliable)
+	void DropFirearm_ServerRPC(UFirearm* Firearm);
+	void DropFirearm_ServerRPC_Implementation(UFirearm* Firearm);
+
 };
