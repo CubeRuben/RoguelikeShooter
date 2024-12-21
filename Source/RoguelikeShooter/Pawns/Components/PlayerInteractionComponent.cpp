@@ -73,6 +73,9 @@ void UPlayerInteractionComponent::UpdateInteractableInSight()
 	if (!newInteractableInSight.GetInterface())
 		return;
 
+	if (InteractableInSight.GetInterface())
+		InteractableInSight->StopHovering();
+
 	newInteractableInSight->StartHovering();
 	InteractableInSight = newInteractableInSight;
 }
