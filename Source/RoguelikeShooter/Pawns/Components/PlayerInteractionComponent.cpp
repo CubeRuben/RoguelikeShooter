@@ -44,7 +44,7 @@ void UPlayerInteractionComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 void UPlayerInteractionComponent::UpdateInteractableInSight()
 {
-	const float interactionDistance = 150.0f;
+	const float interactionDistance = 250.0f;
 	const FVector startLocation = PlayerPawn->GetCameraComponent()->GetComponentLocation();
 	const FVector endLocation = startLocation + PlayerPawn->GetCameraComponent()->GetForwardVector() * interactionDistance;
 

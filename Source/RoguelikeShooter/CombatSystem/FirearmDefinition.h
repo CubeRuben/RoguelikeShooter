@@ -100,5 +100,5 @@ public:
 
 	void GetRequiredAmmoTypes(TSet<class UAmmoDefinition*>& RequiredAmmo) const;
 
-	void OnFire(class UFirearm* Firearm, FVector ShootingDirection);
+	bool OnFire(class UFirearm* Firearm, FVector ShootingDirection);
 };

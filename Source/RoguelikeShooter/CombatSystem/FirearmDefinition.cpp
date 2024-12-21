@@ -37,14 +37,20 @@ void UFirearmDefinition::GetRequiredAmmoTypes(TSet<UAmmoDefinition*>& RequiredAm
 	}
 }
 
-void UFirearmDefinition::OnFire(class UFirearm* Firearm, FVector ShootingDirection)
+bool UFirearmDefinition::OnFire(class UFirearm* Firearm, FVector ShootingDirection)
 {
+	bool bDidFire = false;
+
 	for (auto& behaviour : OnFireBehaviour) 
 	{
 		if (!behaviour)
 			continue;
 
-		if (Firearm->ConsumeAmmo(behaviour->GetAmmoDefinition(), behaviour->GetAmmoConsumption()))
+		const bool bConsumedAmmo = Firearm->ConsumeAmmo(behaviour->GetAmmoDefinition(), behaviour->GetAmmoConsumption());
+		if (bConsumedAmmo)
 			behaviour->OnFire(Firearm, ShootingDirection);
+		bDidFire |= bConsumedAmmo;
 	}
+
+	return bDidFire;
 }

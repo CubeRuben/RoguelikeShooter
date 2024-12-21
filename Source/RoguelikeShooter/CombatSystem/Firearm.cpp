@@ -75,13 +75,12 @@ bool UFirearm::Fire()
 		return false;
 
 	const FVector shootingDirection = OwnerPlayerPawn->GetPlayerCombatComponent()->GetAimAdjustDirection(GetShootingOffset());
-	FirearmDefinition->OnFire(this, shootingDirection);
+	const bool bDidFire = FirearmDefinition->OnFire(this, shootingDirection);
 
-	if (FireRate == 0)
-		return true;
-
-	NextTimeToFire = GetWorld()->GetTimeSeconds() + 1.0f / FireRate;
-	return true;
+	if (FireRate > 0)
+		NextTimeToFire = GetWorld()->GetTimeSeconds() + 1.0f / FireRate;
+	
+	return bDidFire;
 }
 
 void UFirearm::AlternativeAction() 
