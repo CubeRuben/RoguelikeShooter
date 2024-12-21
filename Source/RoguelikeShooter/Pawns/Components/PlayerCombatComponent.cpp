@@ -80,7 +80,10 @@ void UPlayerCombatComponent::HandleInput()
 		if (!currentFirearm->GetIsAutoFireMode())
 			playerInput.bFireWeapon = false;
 
-		currentFirearm->Fire();
+		const bool bDidFire = currentFirearm->Fire();
+
+		if (bDidFire)
+			OnFirearmFire.Broadcast();
 
 		if (!PlayerPawn->HasAuthority())
 			Fire_ServerRPC();

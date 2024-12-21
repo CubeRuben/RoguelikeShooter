@@ -8,6 +8,9 @@
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FReloadUpdateDelegate);
 
+UDELEGATE(BlueprintAuthorityOnly)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFirearmFireDelegate);
+
 UCLASS(BlueprintType)
 class ROGUELIKESHOOTER_API UPlayerCombatComponent : public UActorComponent
 {
@@ -43,6 +46,9 @@ protected:
 
 	UPROPERTY(BlueprintAssignable)
 	FReloadUpdateDelegate OnReloadStop;
+
+	UPROPERTY(BlueprintAssignable)
+	FFirearmFireDelegate OnFirearmFire;
 
 	virtual void BeginPlay() override;
 
