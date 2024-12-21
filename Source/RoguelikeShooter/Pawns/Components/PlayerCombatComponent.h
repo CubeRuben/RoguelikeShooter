@@ -6,7 +6,10 @@
 #include "PlayerCombatComponent.generated.h"
 
 UDELEGATE(BlueprintAuthorityOnly)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FReloadUpdateDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FReloadStartDelegate);
+
+UDELEGATE(BlueprintAuthorityOnly)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FReloadStopDelegate, bool, Forced);
 
 UDELEGATE(BlueprintAuthorityOnly)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFirearmFireDelegate);
@@ -42,10 +45,10 @@ protected:
 	// Delegates
 
 	UPROPERTY(BlueprintAssignable)
-	FReloadUpdateDelegate OnReloadStart;
+	FReloadStartDelegate OnReloadStart;
 
 	UPROPERTY(BlueprintAssignable)
-	FReloadUpdateDelegate OnReloadStop;
+	FReloadStopDelegate OnReloadStop;
 
 	UPROPERTY(BlueprintAssignable)
 	FFirearmFireDelegate OnFirearmFire;
@@ -56,7 +59,7 @@ protected:
 	void UpdateReloading(float DeltaTime);
 
 	void StartReloading();
-	void StopReloading();
+	void StopReloading(bool bForce = false);
 
 	void DropFirearm(UFirearm* Firearm);
 

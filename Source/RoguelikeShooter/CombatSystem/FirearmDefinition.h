@@ -52,6 +52,22 @@ public:
 	int GetMaxValue() const { return MaxValue; }
 };
 
+USTRUCT(BlueprintType)
+struct FFirearmUIData
+{
+	GENERATED_BODY()
+
+public:
+
+	FFirearmUIData();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FString Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UTexture2D* FirearmShape;
+};
+
 UCLASS()
 class ROGUELIKESHOOTER_API UFirearmDefinition : public UDataAsset
 {
@@ -62,9 +78,6 @@ public:
 	UFirearmDefinition() {}
 
 protected:
-
-	UPROPERTY(EditAnywhere)
-	FString Name;
 
 	UPROPERTY(EditAnywhere)
 	FRandomFloatProperty Damage;
@@ -84,12 +97,14 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UStaticMesh* FirearmMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FFirearmUIData FirearmUIData;
+
 	UPROPERTY(EditAnywhere, Instanced)
 	TArray<class UFirearmBaseFire*> OnFireBehaviour;
 
 public:
 
-	FString GetName() const { return Name; };
 	float GetDamage() const { return Damage.GetRandomValue(); }
 	float GetFireRate() const { return FireRate.GetRandomValue(); }
 	int GetAmmoCapacity() const { return AmmoCapacity.GetRandomValue(); }

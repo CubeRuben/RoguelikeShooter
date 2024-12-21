@@ -26,6 +26,12 @@ int FRandomIntProperty::GetRandomValue() const
 	return FMath::RandRange(MinValue, MaxValue);
 }
 
+FFirearmUIData::FFirearmUIData()
+{
+	Name = "";
+	FirearmShape = nullptr;
+}
+
 void UFirearmDefinition::GetRequiredAmmoTypes(TSet<UAmmoDefinition*>& RequiredAmmo) const
 {
 	for (auto& behaviour : OnFireBehaviour)

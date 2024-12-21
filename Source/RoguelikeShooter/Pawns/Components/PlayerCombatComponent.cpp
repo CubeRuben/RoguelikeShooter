@@ -47,17 +47,23 @@ void UPlayerCombatComponent::HandleInput()
 		return;
 	}
 
-	if (playerInput.MouseWheel > 0.0f)
+	if (playerInput.MouseWheel != 0.0f) 
 	{
 		const int amountOfHeldFirearms = HeldFirearms.Num();
-		SetCurrentFirearm((CurrentFirearmIndex - 1 + amountOfHeldFirearms) % amountOfHeldFirearms);
-		StopReloading();
-	}
-	else if (playerInput.MouseWheel < 0.0f)
-	{
-		const int amountOfHeldFirearms = HeldFirearms.Num();
-		SetCurrentFirearm((CurrentFirearmIndex + 1) % amountOfHeldFirearms);
-		StopReloading();
+
+		if (playerInput.MouseWheel > 0.0f)
+		{
+			SetCurrentFirearm((CurrentFirearmIndex - 1 + amountOfHeldFirearms) % amountOfHeldFirearms);
+		}
+		else if (playerInput.MouseWheel < 0.0f)
+		{
+			SetCurrentFirearm((CurrentFirearmIndex + 1) % amountOfHeldFirearms);
+		}
+
+		if (bIsReloading)
+			StopReloading(true);
+
+		return;
 	}
 
 	if (bIsReloading)
@@ -145,11 +151,11 @@ void UPlayerCombatComponent::StartReloading()
 		ReloadAmmo_ServerRPC();
 }
 
-void UPlayerCombatComponent::StopReloading()
+void UPlayerCombatComponent::StopReloading(bool bForce)
 {
 	ReloadingTimer = 0.0f;
 	bIsReloading = false;
-	OnReloadStop.Broadcast();
+	OnReloadStop.Broadcast(bForce);
 }
 
 void UPlayerCombatComponent::DropFirearm(UFirearm* Firearm)

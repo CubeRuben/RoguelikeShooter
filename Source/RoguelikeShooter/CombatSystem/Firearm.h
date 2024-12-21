@@ -23,9 +23,6 @@ protected:
 	class UFirearmDefinition* FirearmDefinition;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
-	FString Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	float Damage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
