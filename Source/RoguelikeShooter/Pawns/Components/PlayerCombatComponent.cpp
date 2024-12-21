@@ -161,7 +161,7 @@ void UPlayerCombatComponent::StopReloading(bool bForce)
 void UPlayerCombatComponent::DropFirearm(UFirearm* Firearm)
 {
 	if (!Firearm) 
-			return;
+		return;
 
 	HeldFirearms.Contains(Firearm);
 
@@ -175,6 +175,16 @@ void UPlayerCombatComponent::DropFirearm(UFirearm* Firearm)
 
 	firearmPickup->SetFirearm(Firearm);
 	HeldFirearms.Remove(Firearm);
+
+	const int num = HeldFirearms.Num();
+	if (num == 0) 
+	{
+		SetCurrentFirearm(0);
+	}
+	else 
+	{
+		SetCurrentFirearm(CurrentFirearmIndex % num);
+	}
 }
 
 UFirearm* UPlayerCombatComponent::GetCurrentFirearm()
@@ -206,6 +216,9 @@ void UPlayerCombatComponent::AddFirearm(UFirearm* NewFirearm)
 	if (!NewFirearm)
 		return;
 
+	if (HeldFirearms.Contains(NewFirearm))
+		return;
+
 	const int index = HeldFirearms.Add(NewFirearm);
 	NewFirearm->SetOwnerPlayerPawn(PlayerPawn);
 	SetCurrentFirearm(index);
@@ -213,10 +226,15 @@ void UPlayerCombatComponent::AddFirearm(UFirearm* NewFirearm)
 
 void UPlayerCombatComponent::SetCurrentFirearm(int Index)
 {
-	if (!HeldFirearms.IsValidIndex(CurrentFirearmIndex))
+	if (!HeldFirearms.IsValidIndex(Index)) 
+	{
+		OnCurrentFirearmChange.Broadcast(nullptr, Index);
 		return;
+	}
 
 	CurrentFirearmIndex = Index;
+
+	OnCurrentFirearmChange.Broadcast(GetCurrentFirearm(), Index);
 }
 
 float UPlayerCombatComponent::GetReloadTimerRatio()
