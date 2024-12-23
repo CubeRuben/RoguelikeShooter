@@ -16,6 +16,7 @@ UPlayerCombatComponent::UPlayerCombatComponent()
 	SetIsReplicated(true);
 
 	CurrentFirearmIndex = 0;
+	CurrentFirearmIndexReplicated = 0;
 }
 
 void UPlayerCombatComponent::BeginPlay()
@@ -187,6 +188,17 @@ void UPlayerCombatComponent::DropFirearm(UFirearm* Firearm)
 	}
 }
 
+void UPlayerCombatComponent::OnRep_CurrentFirearmIndexReplicated()
+{
+	if (!PlayerPawn->HasAuthority()  && !PlayerPawn->IsLocallyControlled())
+		SetCurrentFirearm(CurrentFirearmIndexReplicated);
+}
+
+void UPlayerCombatComponent::OnRep_HeldFirearms()
+{
+	SetCurrentFirearm(CurrentFirearmIndexReplicated);
+}
+
 UFirearm* UPlayerCombatComponent::GetCurrentFirearm()
 {
 	if (HeldFirearms.IsValidIndex(CurrentFirearmIndex))
@@ -235,6 +247,12 @@ void UPlayerCombatComponent::SetCurrentFirearm(int Index)
 	CurrentFirearmIndex = Index;
 
 	OnCurrentFirearmChange.Broadcast(GetCurrentFirearm(), Index);
+
+	if (PlayerPawn->HasAuthority())
+		CurrentFirearmIndexReplicated = CurrentFirearmIndex;
+
+	if (!PlayerPawn->HasAuthority() && PlayerPawn->IsLocallyControlled())
+		SetCurrentFirearm_ServerRPC(CurrentFirearmIndex);
 }
 
 float UPlayerCombatComponent::GetReloadTimerRatio()
@@ -305,6 +323,7 @@ void UPlayerCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(UPlayerCombatComponent, CurrentFirearmIndexReplicated);
 	DOREPLIFETIME(UPlayerCombatComponent, HeldFirearms);
 	DOREPLIFETIME(UPlayerCombatComponent, ContainedAmmo);
 }
@@ -330,6 +349,11 @@ void UPlayerCombatComponent::Fire_ServerRPC_Implementation()
 		return;
 
 	currentFirearm->Fire();
+}
+
+void UPlayerCombatComponent::SetCurrentFirearm_ServerRPC_Implementation(int Index)
+{
+	SetCurrentFirearm(Index);
 }
 
 void UPlayerCombatComponent::ReloadAmmo_ServerRPC_Implementation()

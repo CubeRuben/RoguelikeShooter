@@ -33,13 +33,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int CurrentFirearmIndex;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing=OnRep_CurrentFirearmIndexReplicated)
+	int CurrentFirearmIndexReplicated;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsReloading;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float ReloadingTimer;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing=OnRep_HeldFirearms)
 	TArray<TObjectPtr<class UFirearm>> HeldFirearms;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)
@@ -69,6 +72,12 @@ protected:
 
 	void DropFirearm(UFirearm* Firearm);
 
+	UFUNCTION()
+	void OnRep_CurrentFirearmIndexReplicated();
+
+	UFUNCTION()
+	void OnRep_HeldFirearms();
+
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
@@ -96,6 +105,10 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Fire_ServerRPC();
 	void Fire_ServerRPC_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void SetCurrentFirearm_ServerRPC(int Index);
+	void SetCurrentFirearm_ServerRPC_Implementation(int Index);
 
 	UFUNCTION(Server, Reliable)
 	void ReloadAmmo_ServerRPC();
