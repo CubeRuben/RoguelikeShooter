@@ -13,6 +13,9 @@ UFirearmProjectileFire::UFirearmProjectileFire()
 
 void UFirearmProjectileFire::OnFire(UFirearm* Firearm, FVector ShootingDirection)
 {
+	if (!Firearm->GetOwnerPlayerPawn()->HasAuthority() && !Firearm->GetOwnerPlayerPawn()->IsLocallyControlled())
+		return;
+
 	UWorld* world = Firearm->GetWorld();
 	
 	const FVector startPosition = Firearm->GetOwnerPlayerPawn()->GetClientCameraLocation() + Firearm->GetShootingOffset();

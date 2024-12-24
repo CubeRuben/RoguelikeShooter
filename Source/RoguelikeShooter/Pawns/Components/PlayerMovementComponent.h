@@ -78,6 +78,9 @@ protected:
 	float PawnRotation_Replicated;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
+	float CameraRotation_Replicated;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	EMovementState CurrentMovementState_Replicated;
 
 	void BeginPlay() override;

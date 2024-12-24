@@ -106,6 +106,10 @@ public:
 	void Fire_ServerRPC();
 	void Fire_ServerRPC_Implementation();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Fire_MulticastRPC();
+	void Fire_MulticastRPC_Implementation();
+
 	UFUNCTION(Server, Reliable)
 	void SetCurrentFirearm_ServerRPC(int Index);
 	void SetCurrentFirearm_ServerRPC_Implementation(int Index);

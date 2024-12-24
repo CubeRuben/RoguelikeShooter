@@ -93,7 +93,13 @@ void UPlayerCombatComponent::HandleInput()
 			OnFirearmFire.Broadcast();
 
 		if (!PlayerPawn->HasAuthority())
+		{
 			Fire_ServerRPC();
+		}
+		else 
+		{
+			Fire_MulticastRPC();
+		}
 	}
 
 	if (playerInput.bAlternativeWeaponAction) 
@@ -343,6 +349,20 @@ bool UPlayerCombatComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBun
 
 void UPlayerCombatComponent::Fire_ServerRPC_Implementation()
 {
+	UFirearm* currentFirearm = GetCurrentFirearm();
+
+	if (!currentFirearm)
+		return;
+
+	if (currentFirearm->Fire())
+		Fire_MulticastRPC();
+}
+
+void UPlayerCombatComponent::Fire_MulticastRPC_Implementation()
+{
+	if (PlayerPawn->HasAuthority() || PlayerPawn->IsLocallyControlled())
+		return;
+
 	UFirearm* currentFirearm = GetCurrentFirearm();
 
 	if (!currentFirearm)

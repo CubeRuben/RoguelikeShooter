@@ -92,12 +92,16 @@ void UPlayerMovementComponent::ReplicatedPlayerTick(float DeltaTime)
 	Velocity = Velocity_Replicated;
 	CurrentMovementStateType = CurrentMovementState_Replicated;
 
+	UCameraComponent* playerCamera = PlayerPawn->GetCameraComponent();
+	const float clampedAngle = FMath::Clamp(CameraRotation_Replicated, -85.0f, 85.0f);
+	playerCamera->SetRelativeRotation(FRotator(clampedAngle, 0.0f, 0.0f));
+
 	const FVector location = PlayerPawn->GetActorLocation();
 	const FVector newLocation = FMath::Lerp(location, Location_Replicated, FMath::Pow(0.5f, DeltaTime * 0.5f));
 
 	const FRotator rotation = PlayerPawn->GetActorRotation();
 	const FRotator newRotation = FMath::Lerp(rotation, FRotator(0.0f, PawnRotation_Replicated, 0.0f), FMath::Pow(0.5f, DeltaTime * 0.5f));
-	;
+	
 	PlayerPawn->SetActorLocation(newLocation);
 	PlayerPawn->SetActorRotation(newRotation);
 }
@@ -206,6 +210,7 @@ void UPlayerMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProper
 	DOREPLIFETIME(UPlayerMovementComponent, Location_Replicated);
 	DOREPLIFETIME(UPlayerMovementComponent, Velocity_Replicated);
 	DOREPLIFETIME(UPlayerMovementComponent, PawnRotation_Replicated);
+	DOREPLIFETIME(UPlayerMovementComponent, CameraRotation_Replicated);
 	DOREPLIFETIME(UPlayerMovementComponent, CurrentMovementState_Replicated);
 }
 
@@ -215,6 +220,7 @@ void UPlayerMovementComponent::ReplicateMovement_ServerRPC_Implementation(FVecto
 	Velocity_Replicated = PawnVelocity;
 	PawnRotation_Replicated = PawnRotation;
 	CurrentMovementState_Replicated = MovementStateType;
+	CameraRotation_Replicated = CameraRotation;
 
 	UCameraComponent* playerCamera = PlayerPawn->GetCameraComponent();
 	const float clampedAngle = FMath::Clamp(CameraRotation, -85.0f, 85.0f);

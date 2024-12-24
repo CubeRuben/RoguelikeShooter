@@ -5,6 +5,9 @@
 #include "../../Pawns/PlayerPawn.h"
 
 #include <Camera/CameraComponent.h>
+#include <NiagaraFunctionLibrary.h>
+#include <NiagaraComponent.h>
+#include <NiagaraSystem.h>
 
 UFirearmHitscanFire::UFirearmHitscanFire()
 {
@@ -16,14 +19,31 @@ void UFirearmHitscanFire::OnFire(UFirearm* Firearm, FVector ShootingDirection)
 {
 	APlayerPawn* playerPawn = Firearm->GetOwnerPlayerPawn();
 	const FVector startPosition = playerPawn->GetClientCameraLocation() + Firearm->GetShootingOffset();
-	const FVector endPosition = startPosition + ShootingDirection * HitMaxDistance;
+
+	const float xRotationOffset = FMath::FRandRange(-ScatterAngle, ScatterAngle);
+	const float yRotationOffset = FMath::FRandRange(-ScatterAngle, ScatterAngle);
+	const float zRotationOffset = FMath::FRandRange(-ScatterAngle, ScatterAngle);
+
+	const FVector rotatedShootingDirection = ShootingDirection
+		.RotateAngleAxis(xRotationOffset, FVector::ForwardVector)
+		.RotateAngleAxis(yRotationOffset, FVector::RightVector)
+		.RotateAngleAxis(zRotationOffset, FVector::UpVector);
+
+	const FVector endPosition = startPosition + rotatedShootingDirection * HitMaxDistance;
 
 	FCollisionQueryParams params;
 	params.AddIgnoredActor(playerPawn);
 
 	FHitResult hitResult;
-	if (!Firearm->GetWorld()->LineTraceSingleByProfile(hitResult, startPosition, endPosition, "BlockAll", params))
+	if (!Firearm->GetWorld()->LineTraceSingleByProfile(hitResult, startPosition, endPosition, "BlockAll", params)) 
+	{
+		SpawnVisual(Firearm, startPosition, endPosition);
 		return;
+	}
+
+	SpawnVisual(Firearm, startPosition, hitResult.Location);
+
+	if (playerPawn->HasAuthority())
 
 	if (!hitResult.GetActor())
 		return;
@@ -39,4 +59,17 @@ void UFirearmHitscanFire::OnFire(UFirearm* Firearm, FVector ShootingDirection)
 	damageParams.HitLocation = hitResult.Location;
 
 	damageable->ApplyDamage(Firearm->GetDamage(), &damageParams);
+}
+
+void UFirearmHitscanFire::SpawnVisual(UFirearm* Firearm, FVector StartLocation, FVector EndLocation)
+{
+	if (!TraceParticleSystem)
+		return;
+
+	UNiagaraComponent* niagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(Firearm->GetOwnerPlayerPawn(), TraceParticleSystem, StartLocation);
+
+	if (!niagaraComponent)
+		return;
+
+	niagaraComponent->SetVectorParameter(TEXT("TraceEnd"), EndLocation - StartLocation);
 }

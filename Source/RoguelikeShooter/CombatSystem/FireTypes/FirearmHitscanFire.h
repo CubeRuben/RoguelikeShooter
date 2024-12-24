@@ -21,8 +21,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float ScatterAngle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UNiagaraSystem* TraceParticleSystem;
+
 public: 
 
 	void OnFire(class UFirearm* Firearm, FVector ShootingDirection) override;
 	
+	void SpawnVisual(class UFirearm* Firearm, FVector StartLocation, FVector EndLocation);
 };
