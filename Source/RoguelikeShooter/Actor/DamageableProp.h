@@ -29,4 +29,6 @@ public:
 	virtual void ApplyDamage(float DamageAmount, FDamageParams* DamageParams = nullptr) override;
 	void ApplyImpulse(FVector Impulse) override;
 
+
+
 };

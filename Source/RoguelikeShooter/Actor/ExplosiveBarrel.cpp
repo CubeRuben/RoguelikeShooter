@@ -19,7 +19,8 @@ void AExplosiveBarrel::OnDestroy()
 	const float timer = FMath::RandRange(MinTimeForExplosion, MaxTimeForExplosion);
 	GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, this, &AExplosiveBarrel::Explode, timer);
 
-	OnSetOnFire();
+	if (HasAuthority())
+		SetOnFire_MulticastRPC();
 }
 
 void AExplosiveBarrel::Explode()
@@ -32,4 +33,9 @@ void AExplosiveBarrel::Explode()
 		explosion->InitExplosion(this, 125.0f, 10.0f * 100.0f, 500000.0f);
 
 	Destroy();
+}
+
+void AExplosiveBarrel::SetOnFire_MulticastRPC_Implementation()
+{
+	OnSetOnFire();
 }

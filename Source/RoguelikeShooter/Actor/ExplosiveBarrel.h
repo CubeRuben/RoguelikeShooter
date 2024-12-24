@@ -31,4 +31,8 @@ protected:
 	void OnSetOnFire();
 
 public:
+
+	UFUNCTION(NetMulticast, Reliable)
+	void SetOnFire_MulticastRPC();
+	void SetOnFire_MulticastRPC_Implementation();
 };
