@@ -80,7 +80,12 @@ void SBaseGroundedState::Tick(float DeltaTime)
 	if (moveHit.bBlockingHit)
 	{
 		if (!StepUp(movementDelta))
+		{
+			if (moveHit.Component.IsValid() && moveHit.Component->IsSimulatingPhysics())
+				moveHit.Component->AddForceAtLocation(MovementComponent->Velocity * 300.0f, moveHit.Location);
+
 			MovementComponent->SlideAlongSurface(movementDelta, 1.0f - moveHit.Time, moveHit.ImpactNormal, moveHit);
+		}
 	}
 
 	// Check ground
