@@ -43,7 +43,8 @@ void UFirearmHitscanFire::OnFire(UFirearm* Firearm, FVector ShootingDirection)
 
 	SpawnVisual(Firearm, startPosition, hitResult.Location);
 
-	if (playerPawn->HasAuthority())
+	if (!playerPawn->HasAuthority())
+		return;
 
 	if (!hitResult.GetActor())
 		return;

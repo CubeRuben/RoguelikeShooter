@@ -1,8 +1,11 @@
 #include "Turret.h"
 
 #include "PlayerPawn.h"
+#include "../CombatSystem/Projectiles/BaseProjectile.h"
 
 #include <NiagaraComponent.h>
+#include <NiagaraSystem.h>
+#include <NiagaraFunctionLibrary.h>
 
 #include <Components/PoseableMeshComponent.h>
 #include <Components/SphereComponent.h>
@@ -34,6 +37,13 @@ ATurret::ATurret()
 	TargetBodyRotation = 0.0f;
 
 	AIState = ETurretState::LookingAround;
+
+	AttackType = ETurretAttackType::Hitscan;
+
+	AttackCooldown = 0.25f;
+	AttackCooldownTimer = 0.0f;
+	Damage = 15.0f;
+	HitscanScatterAngle = 5.0f;
 }
 
 void ATurret::BeginPlay()
@@ -116,11 +126,80 @@ void ATurret::UpdateAttackTarget(float DeltaTime)
 	TargetBodyRotation = FMath::Clamp(TargetBodyRotation + clampedDeltaSpeedRotation, -BodyMaxRotationAngle, BodyMaxRotationAngle);
 
 	LaserNiagaraComponent->SetVectorParameter("LaserEnd", TargetActor->GetActorLocation() + FVector(0.0f, 0.0f, 25.0f));
+
+	if (FVector::DotProduct(LaserNiagaraComponent->GetForwardVector(), (TargetActor->GetActorLocation() - GetActorLocation()).GetSafeNormal()) < 0.8f)
+		return;
+
+	if (AttackCooldownTimer > 0.0f)
+		return;
+
+	AttackCooldownTimer = AttackCooldown;
+
+	if (AttackType == ETurretAttackType::Hitscan) 
+	{
+		const FVector startPosition = TurretMeshComponent->GetSocketLocation("gunheadSocket");
+
+		const float xRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
+		const float yRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
+		const float zRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
+
+		const FVector rotatedShootingDirection = LaserNiagaraComponent->GetForwardVector()
+			.RotateAngleAxis(xRotationOffset, FVector::ForwardVector)
+			.RotateAngleAxis(yRotationOffset, FVector::RightVector)
+			.RotateAngleAxis(zRotationOffset, FVector::UpVector);
+
+		const FVector endPosition = startPosition + rotatedShootingDirection * 2500.0f;
+
+		FCollisionQueryParams params;
+		params.AddIgnoredActor(this);
+
+		FHitResult hitResult;
+		if (!GetWorld()->LineTraceSingleByProfile(hitResult, startPosition, endPosition, "BlockAll", params))
+		{
+			SpawnVisual(startPosition, endPosition);
+			return;
+		}
+
+		SpawnVisual(startPosition, hitResult.Location);
+
+		if (!hitResult.GetActor())
+			return;
+
+		IDamageable* damageable = Cast<IDamageable>(hitResult.GetActor());
+
+		if (!damageable)
+			return;
+
+		FDamageParams damageParams;
+		damageParams.DamageSource = this;
+		damageParams.HitDirection = LaserNiagaraComponent->GetForwardVector();
+		damageParams.HitLocation = hitResult.Location;
+
+		damageable->ApplyDamage(Damage, &damageParams);
+	}
+	else if (AttackType == ETurretAttackType::Projectile)
+	{
+		FActorSpawnParameters params;
+		params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+		ABaseProjectile* projectile = GetWorld()->SpawnActor<ABaseProjectile>(ProjectileClass, TurretMeshComponent->GetSocketLocation("gunheadSocket"), FRotator::ZeroRotator, params);
+		const float xRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
+		const float yRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
+		const float zRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
+		const FVector rotatedShootingDirection = LaserNiagaraComponent->GetForwardVector()
+			.RotateAngleAxis(xRotationOffset, FVector::ForwardVector)
+			.RotateAngleAxis(yRotationOffset, FVector::RightVector)
+			.RotateAngleAxis(zRotationOffset, FVector::UpVector);
+		projectile->InitProjectile(rotatedShootingDirection, Damage, this);
+	}
 }
 
 void ATurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (AttackCooldownTimer > 0.0f)
+		AttackCooldownTimer -= DeltaTime;
 
 	switch (AIState)
 	{
@@ -133,6 +212,19 @@ void ATurret::Tick(float DeltaTime)
 	default:
 		break;
 	}
+}
+
+void ATurret::SpawnVisual(FVector StartLocation, FVector EndLocation)
+{
+	if (!TraceParticleSystem)
+		return;
+
+	UNiagaraComponent* niagaraComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, TraceParticleSystem, StartLocation);
+
+	if (!niagaraComponent)
+		return;
+
+	niagaraComponent->SetVectorParameter(TEXT("TraceEnd"), EndLocation - StartLocation);
 }
 
 void ATurret::OnTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

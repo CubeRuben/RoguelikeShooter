@@ -11,6 +11,13 @@ enum class ETurretState : uint8
 	Attacking
 };
 
+UENUM(BlueprintType)
+enum class ETurretAttackType : uint8
+{
+	Hitscan,
+	Projectile
+};
+
 UCLASS(BlueprintType)
 class ROGUELIKESHOOTER_API ATurret : public APawn
 {
@@ -55,6 +62,27 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TWeakObjectPtr<AActor> TargetActor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	ETurretAttackType AttackType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float AttackCooldown;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float AttackCooldownTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float HitscanScatterAngle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class UNiagaraSystem* TraceParticleSystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<class ABaseProjectile> ProjectileClass;
+
 	float BodyMaxAngleCos;
 
 	virtual void BeginPlay() override;
@@ -73,6 +101,8 @@ protected:
 	bool IsTargetInRange(AActor* Target);
 	bool IsTargetVisible(AActor* Target);
 	bool IsValidTarget(AActor* Target);
+
+	void SpawnVisual(FVector StartLocation, FVector EndLocation);
 
 public:	
 
