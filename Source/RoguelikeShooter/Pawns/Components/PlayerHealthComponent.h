@@ -18,13 +18,15 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated)
 	float HealthPoints;
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnDamageTakenDelegate OnDamageTaken;
 
 	virtual void BeginPlay() override;
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 

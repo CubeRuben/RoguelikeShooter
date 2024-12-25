@@ -1,5 +1,7 @@
 #include "PlayerHealthComponent.h"
 
+#include <Net/UnrealNetwork.h>
+
 UPlayerHealthComponent::UPlayerHealthComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -12,6 +14,13 @@ UPlayerHealthComponent::UPlayerHealthComponent()
 void UPlayerHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void UPlayerHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPlayerHealthComponent, HealthPoints);
 }
 
 void UPlayerHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -27,6 +36,9 @@ void UPlayerHealthComponent::SetHealthPoints(float NewHealthPoints)
 
 void UPlayerHealthComponent::ApplyDamage(float DamageAmount, AActor* DamageSource)
 {
+	if (!GetOwner()->HasAuthority())
+		return;
+
 	if (DamageAmount < 0.0f)
 		return;
 
