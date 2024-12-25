@@ -57,6 +57,16 @@ void ATurret::BeginPlay()
 	TriggerSphereComponent->OnComponentBeginOverlap.AddDynamic(this, &ATurret::OnTriggerBeginOverlap);
 	TriggerSphereComponent->OnComponentEndOverlap.AddDynamic(this, &ATurret::OnTriggerEndOverlap);
 
+	TArray<AActor*> actors;
+	TriggerSphereComponent->GetOverlappingActors(actors, APlayerPawn::StaticClass());
+
+	for (AActor* actor : actors) 
+	{
+		FHitResult hit;
+		OnTriggerBeginOverlap(nullptr, actor, nullptr, 0, false, hit);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "called");
+	}
+
 	BodyMaxAngleCos = FMath::Cos(FMath::DegreesToRadians(BodyMaxRotationAngle));
 }
 
@@ -149,7 +159,9 @@ void ATurret::UpdateAttackTarget(float DeltaTime)
 		const float yRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
 		const float zRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
 
-		const FVector rotatedShootingDirection = LaserNiagaraComponent->GetForwardVector()
+		const FVector shootingDirection = (TargetActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+
+		const FVector rotatedShootingDirection = shootingDirection
 			.RotateAngleAxis(xRotationOffset, FVector::ForwardVector)
 			.RotateAngleAxis(yRotationOffset, FVector::RightVector)
 			.RotateAngleAxis(zRotationOffset, FVector::UpVector);
@@ -178,7 +190,7 @@ void ATurret::UpdateAttackTarget(float DeltaTime)
 
 		FDamageParams damageParams;
 		damageParams.DamageSource = this;
-		damageParams.HitDirection = LaserNiagaraComponent->GetForwardVector();
+		damageParams.HitDirection = shootingDirection;
 		damageParams.HitLocation = hitResult.Location;
 
 		damageable->ApplyDamage(Damage, &damageParams);
@@ -192,7 +204,8 @@ void ATurret::UpdateAttackTarget(float DeltaTime)
 		const float xRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
 		const float yRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
 		const float zRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
-		const FVector rotatedShootingDirection = LaserNiagaraComponent->GetForwardVector()
+		const FVector shootingDirection = (TargetActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		const FVector rotatedShootingDirection = shootingDirection
 			.RotateAngleAxis(xRotationOffset, FVector::ForwardVector)
 			.RotateAngleAxis(yRotationOffset, FVector::RightVector)
 			.RotateAngleAxis(zRotationOffset, FVector::UpVector);
