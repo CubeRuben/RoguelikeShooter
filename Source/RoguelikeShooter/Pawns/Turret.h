@@ -57,8 +57,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float BodyRotationDirection;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
 	float TargetBodyRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated)
+	FVector LaserEnd_Replicated;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	ETurretState AIState;
@@ -107,6 +110,8 @@ protected:
 	bool IsValidTarget(AActor* Target);
 
 	void SpawnVisual(FVector StartLocation, FVector EndLocation);
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 

@@ -10,6 +10,8 @@
 #include <Components/PoseableMeshComponent.h>
 #include <Components/SphereComponent.h>
 
+#include <Net/UnrealNetwork.h>
+
 ATurret::ATurret()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -105,6 +107,7 @@ void ATurret::UpdateLookingAround(float DeltaTime)
 		laserEndLocation = hitResult.ImpactPoint;
 	
 	LaserNiagaraComponent->SetVectorParameter("LaserEnd", laserEndLocation);
+	LaserEnd_Replicated = laserEndLocation;
 }
 
 void ATurret::UpdateAttackTarget(float DeltaTime)
@@ -128,6 +131,7 @@ void ATurret::UpdateAttackTarget(float DeltaTime)
 	TargetBodyRotation = FMath::Clamp(TargetBodyRotation + clampedDeltaSpeedRotation, -BodyMaxRotationAngle, BodyMaxRotationAngle);
 
 	LaserNiagaraComponent->SetVectorParameter("LaserEnd", TargetActor->GetActorLocation() + FVector(0.0f, 0.0f, 25.0f));
+	LaserEnd_Replicated = TargetActor->GetActorLocation() + FVector(0.0f, 0.0f, 25.0f);
 
 	if (FVector::DotProduct(LaserNiagaraComponent->GetForwardVector(), (TargetActor->GetActorLocation() - GetActorLocation()).GetSafeNormal()) < 0.8f)
 		return;
@@ -200,6 +204,12 @@ void ATurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!HasAuthority()) 
+	{
+		LaserNiagaraComponent->SetVectorParameter("LaserEnd", LaserEnd_Replicated);
+		return;
+	}
+
 	if (AttackCooldownTimer > 0.0f)
 		AttackCooldownTimer -= DeltaTime;
 
@@ -240,6 +250,14 @@ void ATurret::SpawnVisual(FVector StartLocation, FVector EndLocation)
 		return;
 
 	niagaraComponent->SetVectorParameter(TEXT("TraceEnd"), EndLocation - StartLocation);
+}
+
+void ATurret::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ATurret, TargetBodyRotation);
+	DOREPLIFETIME(ATurret, LaserEnd_Replicated);
 }
 
 void ATurret::OnTriggerBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
