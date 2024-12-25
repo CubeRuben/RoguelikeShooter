@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "../CombatSystem/Damageable.h"
 #include "Turret.generated.h"
 
 UENUM(BlueprintType)
@@ -19,7 +20,7 @@ enum class ETurretAttackType : uint8
 };
 
 UCLASS(BlueprintType)
-class ROGUELIKESHOOTER_API ATurret : public APawn
+class ROGUELIKESHOOTER_API ATurret : public APawn, public IDamageable
 {
 	GENERATED_BODY()
 
@@ -37,6 +38,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UNiagaraComponent* LaserNiagaraComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float HealthPoints;
 
 	UPROPERTY(VisibleAnywhere)
 	TSet<TWeakObjectPtr<class APlayerPawn>> TargetedPlayers;
@@ -108,4 +112,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	void ApplyDamage(float DamageAmount, FDamageParams* DamageParams = nullptr) override;
+	void ApplyImpulse(FVector Impulse) override;
+	FVector GetLocation() override { return GetActorLocation() + FVector(0.0f, 0.0f, 100.0f); }
 };

@@ -55,7 +55,7 @@ void AExplosion::InitExplosion(AActor* ExplosionOwner, float Damage, float Damag
 		if (!damageable)
 			continue;
 
-		const float distanceToTargetSquared = FVector::DistSquared(GetActorLocation(), actor->GetActorLocation());
+		const float distanceToTargetSquared = FVector::DistSquared(GetActorLocation(), damageable->GetLocation());
 
 		if (distanceToTargetSquared > damageDistanceSquared)
 			continue;
@@ -66,7 +66,7 @@ void AExplosion::InitExplosion(AActor* ExplosionOwner, float Damage, float Damag
 		collisionParams.AddIgnoredActor(ExplosionOwner);
 
 		FHitResult hit;
-		if (GetWorld()->LineTraceSingleByProfile(hit, GetActorLocation(), actor->GetActorLocation(), "BlockAll", collisionParams))
+		if (GetWorld()->LineTraceSingleByProfile(hit, GetActorLocation(), damageable->GetLocation(), "BlockAll", collisionParams))
 			continue;
 
 		FDamageParams params;
@@ -76,7 +76,7 @@ void AExplosion::InitExplosion(AActor* ExplosionOwner, float Damage, float Damag
 
 		damageable->ApplyDamage(Damage * ratio, &params);
 		
-		const FVector impulseDirection = (actor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		const FVector impulseDirection = (damageable->GetLocation() - GetActorLocation()).GetSafeNormal();
 		damageable->ApplyImpulse(impulseDirection * Impulse * ratio);
 	}
 }

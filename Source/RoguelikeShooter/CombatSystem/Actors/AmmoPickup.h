@@ -30,4 +30,5 @@ public:
 
 	void Pickup(class APlayerPawn* Pawn) override;
 	void ApplyImpulse(FVector Impulse) override;
+	FVector GetLocation() override { return GetActorLocation(); }
 };

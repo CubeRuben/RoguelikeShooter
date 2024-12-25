@@ -44,6 +44,8 @@ ATurret::ATurret()
 	AttackCooldownTimer = 0.0f;
 	Damage = 15.0f;
 	HitscanScatterAngle = 5.0f;
+
+	HealthPoints = 200.0f;
 }
 
 void ATurret::BeginPlay()
@@ -214,6 +216,19 @@ void ATurret::Tick(float DeltaTime)
 	}
 }
 
+void ATurret::ApplyDamage(float DamageAmount, FDamageParams* DamageParams)
+{
+	HealthPoints -= DamageAmount;
+
+	if (HealthPoints <= 0)
+		Destroy();
+}
+
+void ATurret::ApplyImpulse(FVector Impulse)
+{
+	TurretMeshComponent->AddImpulse(Impulse);
+}
+
 void ATurret::SpawnVisual(FVector StartLocation, FVector EndLocation)
 {
 	if (!TraceParticleSystem)
@@ -240,7 +255,17 @@ void ATurret::OnTriggerEndOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	APlayerPawn* playerPawn = Cast<APlayerPawn>(OtherActor);
 
 	if (playerPawn)
+	{
 		TargetedPlayers.Remove(playerPawn);
+
+		if (TargetActor == playerPawn)
+		{
+			TargetActor = nullptr;
+			AIState = ETurretState::LookingAround;
+			return;
+		}
+
+	}
 }
 
 float ATurret::TargetDotProduct(const FVector& Location)

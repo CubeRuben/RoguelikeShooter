@@ -38,4 +38,5 @@ public:
 
 	virtual void ApplyDamage(float DamageAmount, FDamageParams* = nullptr) {}
 	virtual void ApplyImpulse(FVector Impulse) {}
+	virtual FVector GetLocation() { return FVector::ZeroVector; }
 };

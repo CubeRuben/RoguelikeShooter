@@ -87,6 +87,7 @@ public:
 	// IDamageable Interface
 	void ApplyDamage(float DamageAmount, FDamageParams* DamageParams = nullptr) override;
 	void ApplyImpulse(FVector Impulse) override;
+	FVector GetLocation() override { return GetActorLocation(); }
 	//
 
 	virtual void Tick(float DeltaTime) override;
