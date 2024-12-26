@@ -35,6 +35,9 @@ void ABombProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* 
 	if (!OtherActor)
 		return;
 
+	if (OwnerActor == OtherActor)
+		return;
+
 	IDamageable* damageable = Cast<IDamageable>(OtherActor);
 
 	if (!damageable)
