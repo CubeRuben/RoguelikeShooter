@@ -5,8 +5,12 @@
 
 AHealthPackPickup::AHealthPackPickup()
 {
+	bReplicates = true;
+	SetReplicateMovement(true);
+
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	MeshComponent->SetSimulatePhysics(true);
+	MeshComponent->SetUseCCD(true);
 	RootComponent = MeshComponent;
 
 	HPToHeal = 50.0f;

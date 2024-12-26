@@ -3,9 +3,12 @@
 #include "../../Pawns/PlayerPawn.h"
 #include "../../Pawns/Components/PlayerCombatComponent.h"
 
+#include <Net/UnrealNetwork.h>
+
 AAmmoPickup::AAmmoPickup()
 {
 	bReplicates = true;
+	SetReplicateMovement(true);
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh Component"));
 	MeshComponent->SetSimulatePhysics(true);
@@ -14,6 +17,13 @@ AAmmoPickup::AAmmoPickup()
 
 	AmmoDefinition = nullptr;
 	AmmoAmount = 30;
+}
+
+void AAmmoPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AAmmoPickup, AmmoDefinition);
 }
 
 void AAmmoPickup::Pickup(APlayerPawn* Pawn)

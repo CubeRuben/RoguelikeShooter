@@ -52,6 +52,7 @@ public:
 	void SetOwnerPlayerPawn(class APlayerPawn* NewOwnerPlayerPawn);
 	class APlayerPawn* GetOwnerPlayerPawn() const;
 
+	UFUNCTION(BlueprintCallable)
 	void SetFirearmDefinition(class UFirearmDefinition* NewFirearmDefinition);
 	class UFirearmDefinition* GetFirearmDefinition() const { return FirearmDefinition; }
 

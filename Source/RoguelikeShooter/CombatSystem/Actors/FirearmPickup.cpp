@@ -8,6 +8,7 @@
 
 #include <Components/WidgetComponent.h>
 #include <Net/UnrealNetwork.h>
+#include <Engine/ActorChannel.h>
 
 AFirearmPickup::AFirearmPickup()
 {
@@ -98,6 +99,19 @@ void AFirearmPickup::StopHovering()
 {
 	if (FirearmWidget)
 		FirearmWidget->StopHovering();
+}
+
+bool AFirearmPickup::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool wroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	if (!Firearm.IsNull()) 
+	{
+		wroteSomething |= Firearm->ReplicateSubobjects(Channel, Bunch, RepFlags);
+		wroteSomething |= Channel->ReplicateSubobject(Firearm, *Bunch, *RepFlags);
+	}
+
+	return wroteSomething;
 }
 
 void AFirearmPickup::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)

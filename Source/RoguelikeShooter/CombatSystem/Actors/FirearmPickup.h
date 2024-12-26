@@ -37,6 +37,7 @@ protected:
 
 public:	
 
+	UFUNCTION(BlueprintCallable)
 	void SetFirearm(UFirearm* NewFirearm);
 
 	virtual void Tick(float DeltaTime) override;
@@ -45,6 +46,8 @@ public:
 
 	void StartHovering() override;
 	void StopHovering() override;
+
+	bool ReplicateSubobjects(class UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 
 #if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);

@@ -20,11 +20,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* MeshComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, ReplicatedUsing=OnRep_AmmoDefinition)
 	class UAmmoDefinition* AmmoDefinition;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int AmmoAmount;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnRep_AmmoDefinition();
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:	
 

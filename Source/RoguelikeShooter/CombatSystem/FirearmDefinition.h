@@ -68,7 +68,7 @@ public:
 	UTexture2D* FirearmShape;
 };
 
-UCLASS()
+UCLASS(BlueprintType)
 class ROGUELIKESHOOTER_API UFirearmDefinition : public UDataAsset
 {
 	GENERATED_BODY()
