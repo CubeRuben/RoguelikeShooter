@@ -29,6 +29,24 @@ void UPlayerCombatComponent::BeginPlay()
 		DestroyComponent();	
 }
 
+void UPlayerCombatComponent::DropAllFirearms()
+{
+	FActorSpawnParameters spawnParams;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+
+	for (UFirearm* firearm : HeldFirearms) 
+	{
+		AFirearmPickup* firearmPickup = GetWorld()->SpawnActor<AFirearmPickup>(AFirearmPickup::StaticClass(), PlayerPawn->GetClientLocation(), FRotator::ZeroRotator, spawnParams);
+
+		if (!firearmPickup)
+			return;
+
+		firearmPickup->SetFirearm(firearm);
+	}
+
+	HeldFirearms.Empty();
+}
+
 void UPlayerCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);

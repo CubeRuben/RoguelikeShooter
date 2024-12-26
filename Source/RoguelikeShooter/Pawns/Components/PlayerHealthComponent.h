@@ -28,6 +28,8 @@ protected:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	void OnDeath();
+
 public:	
 
 	void SetHealthPoints(float NewHealthPoints);

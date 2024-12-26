@@ -57,7 +57,7 @@ void APlayerPawn::ApplyImpulse(FVector Impulse)
 {
 	MovementComponent->Velocity += Impulse / 100.0f;
 
-	if (HasAuthority() && !IsLocallyControlled())
+	if (HasAuthority())
 		ApplyImpulse_ClientRPC(Impulse);
 }
 
@@ -131,5 +131,5 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void APlayerPawn::ApplyImpulse_ClientRPC_Implementation(FVector Impulse)
 {
-	ApplyImpulse(Impulse);
+	MovementComponent->Velocity += Impulse / 100.0f;
 }

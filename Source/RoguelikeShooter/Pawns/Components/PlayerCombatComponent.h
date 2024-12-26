@@ -82,6 +82,8 @@ protected:
 
 public:	
 	
+	void DropAllFirearms();
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	class UFirearm* GetCurrentFirearm();

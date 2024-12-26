@@ -18,6 +18,7 @@ AFirearmPickup::AFirearmPickup()
 
 	FirearmMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Firearm Mesh Component"));
 	FirearmMeshComponent->SetSimulatePhysics(true);
+	FirearmMeshComponent->SetUseCCD(true);
 	RootComponent = FirearmMeshComponent;
 
 	FirearmWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Firearm Widget Component"));
