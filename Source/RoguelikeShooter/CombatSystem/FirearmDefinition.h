@@ -91,10 +91,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FRandomFloatProperty AmmoReloadTime;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector ShootingOffset;	
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UStaticMesh* FirearmMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

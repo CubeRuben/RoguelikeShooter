@@ -120,4 +120,8 @@ public:
 	void ApplyDamage(float DamageAmount, FDamageParams* DamageParams = nullptr) override;
 	void ApplyImpulse(FVector Impulse) override;
 	FVector GetLocation() override { return GetActorLocation() + FVector(0.0f, 0.0f, 100.0f); }
+
+	UFUNCTION(NetMulticast, Reliable)
+	void SpawnVisual_MulticastRPC(FVector StartLocation, FVector EndLocation);
+	void SpawnVisual_MulticastRPC_Implementation(FVector StartLocation, FVector EndLocation);
 };

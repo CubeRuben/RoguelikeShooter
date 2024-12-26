@@ -64,7 +64,6 @@ void ATurret::BeginPlay()
 	{
 		FHitResult hit;
 		OnTriggerBeginOverlap(nullptr, actor, nullptr, 0, false, hit);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "called");
 	}
 
 	BodyMaxAngleCos = FMath::Cos(FMath::DegreesToRadians(BodyMaxRotationAngle));
@@ -174,11 +173,11 @@ void ATurret::UpdateAttackTarget(float DeltaTime)
 		FHitResult hitResult;
 		if (!GetWorld()->LineTraceSingleByProfile(hitResult, startPosition, endPosition, "BlockAll", params))
 		{
-			SpawnVisual(startPosition, endPosition);
+			SpawnVisual_MulticastRPC(startPosition, endPosition);
 			return;
 		}
 
-		SpawnVisual(startPosition, hitResult.Location);
+		SpawnVisual_MulticastRPC(startPosition, hitResult.Location);
 
 		if (!hitResult.GetActor())
 			return;
@@ -250,6 +249,11 @@ void ATurret::ApplyDamage(float DamageAmount, FDamageParams* DamageParams)
 void ATurret::ApplyImpulse(FVector Impulse)
 {
 	TurretMeshComponent->AddImpulse(Impulse);
+}
+
+void ATurret::SpawnVisual_MulticastRPC_Implementation(FVector StartLocation, FVector EndLocation)
+{
+	SpawnVisual(StartLocation, EndLocation);
 }
 
 void ATurret::SpawnVisual(FVector StartLocation, FVector EndLocation)
