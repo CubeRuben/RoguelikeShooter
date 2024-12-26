@@ -7,6 +7,7 @@
 
 #include <Camera/CameraComponent.h>
 #include <Net/UnrealNetwork.h>
+#include <Kismet/GameplayStatics.h>
 
 UFirearm::UFirearm()
 {
@@ -76,6 +77,9 @@ bool UFirearm::Fire()
 
 	if (FireRate > 0)
 		NextTimeToFire = GetWorld()->GetTimeSeconds() + 1.0f / FireRate;
+
+	if (bDidFire)
+		UGameplayStatics::PlaySoundAtLocation(OwnerPlayerPawn.Get(), FirearmDefinition->GetShotSound(), OwnerPlayerPawn->GetActorLocation());
 	
 	return bDidFire;
 }
@@ -145,7 +149,7 @@ void UFirearm::ReloadAmmo()
 		
 		container.AmmoAmount += ammoToConsume;
 
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Consumed ammo");
+		UGameplayStatics::PlaySoundAtLocation(OwnerPlayerPawn.Get(), FirearmDefinition->GetReloadSound(), OwnerPlayerPawn->GetActorLocation());
 	}
 }
 

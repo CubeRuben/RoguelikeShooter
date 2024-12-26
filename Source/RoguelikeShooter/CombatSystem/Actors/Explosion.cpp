@@ -6,6 +6,8 @@
 #include <NiagaraFunctionLibrary.h>
 #include <NiagaraComponent.h>
 #include <NiagaraSystem.h>
+#include <Sound/SoundCue.h>
+#include <Kismet/GameplayStatics.h>
 
 AExplosion::AExplosion()
 {
@@ -21,6 +23,13 @@ AExplosion::AExplosion()
 		NiagaraComponent->SetupAttachment(RootComponent);
 		NiagaraComponent->SetAsset(ExplosionNiagaraSystemAsset.Object);
 	}
+
+	ConstructorHelpers::FObjectFinder<USoundCue> ExplosionSoundAsset(TEXT("/Game/SFX/Explosion/SC_Explosion.SC_Explosion"));
+
+	if (ExplosionSoundAsset.Object) 
+	{
+		ExplosionSound = ExplosionSoundAsset.Object;
+	}
 }
 
 void AExplosion::BeginPlay()
@@ -32,6 +41,8 @@ void AExplosion::BeginPlay()
 
 	NiagaraComponent->OnSystemFinished.AddDynamic(this, &AExplosion::OnSystemFinished);
 	NiagaraComponent->Activate(true);
+
+	UGameplayStatics::PlaySoundAtLocation(this, ExplosionSound, GetActorLocation());
 }
 
 void AExplosion::OnSystemFinished(UNiagaraComponent* System)

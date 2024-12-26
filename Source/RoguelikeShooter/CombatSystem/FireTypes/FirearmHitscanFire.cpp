@@ -9,6 +9,7 @@
 #include <NiagaraComponent.h>
 #include <NiagaraSystem.h>
 
+
 UFirearmHitscanFire::UFirearmHitscanFire()
 {
 	HitMaxDistance = 5000.0f;

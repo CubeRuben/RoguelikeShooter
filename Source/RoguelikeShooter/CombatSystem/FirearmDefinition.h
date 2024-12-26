@@ -100,6 +100,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FFirearmUIData FirearmUIData;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USoundBase* ShotSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	USoundBase* ReloadSound;
+
 	UPROPERTY(EditAnywhere, Instanced)
 	TArray<class UFirearmBaseFire*> OnFireBehaviour;
 
@@ -110,6 +116,9 @@ public:
 	int GetAmmoCapacity() const { return AmmoCapacity.GetRandomValue(); }
 	float GetAmmoReloadTime() const {return AmmoReloadTime.GetRandomValue(); }
 	FVector GetShootingOffset() const { return ShootingOffset; }
+
+	USoundBase* GetShotSound() const { return ShotSound; };
+	USoundBase* GetReloadSound() const { return ReloadSound; };
 	
 	class UStaticMesh* GetFirearmMesh() const { return FirearmMesh; }
 

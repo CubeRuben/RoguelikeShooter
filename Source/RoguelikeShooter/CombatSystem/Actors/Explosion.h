@@ -4,7 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Explosion.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class ROGUELIKESHOOTER_API AExplosion : public AActor
 {
 	GENERATED_BODY()
@@ -18,13 +18,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UNiagaraComponent* NiagaraComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USoundBase* ExplosionSound;
+
 	void BeginPlay() override;
 
 	UFUNCTION()
 	void OnSystemFinished(class UNiagaraComponent* System);
 
 public:	
-
+	
+	UFUNCTION(BlueprintCallable)
 	void InitExplosion(AActor* ExplosionOwner, float Damage, float DamageDistance, float Impulse);
 
 };

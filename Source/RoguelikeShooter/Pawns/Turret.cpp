@@ -158,7 +158,7 @@ void ATurret::UpdateAttackTarget(float DeltaTime)
 		const float yRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
 		const float zRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
 
-		const FVector shootingDirection = (TargetActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		const FVector shootingDirection = (TargetActor->GetActorLocation() - startPosition).GetSafeNormal();
 
 		const FVector rotatedShootingDirection = shootingDirection
 			.RotateAngleAxis(xRotationOffset, FVector::ForwardVector)
@@ -169,6 +169,8 @@ void ATurret::UpdateAttackTarget(float DeltaTime)
 
 		FCollisionQueryParams params;
 		params.AddIgnoredActor(this);
+
+		OnShot_MulticastRPC();
 
 		FHitResult hitResult;
 		if (!GetWorld()->LineTraceSingleByProfile(hitResult, startPosition, endPosition, "BlockAll", params))
@@ -203,13 +205,17 @@ void ATurret::UpdateAttackTarget(float DeltaTime)
 		const float xRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
 		const float yRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
 		const float zRotationOffset = FMath::FRandRange(-HitscanScatterAngle, HitscanScatterAngle);
-		const FVector shootingDirection = (TargetActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+		const FVector shootingDirection = (TargetActor->GetActorLocation() - TurretMeshComponent->GetSocketLocation("gunheadSocket")).GetSafeNormal();
 		const FVector rotatedShootingDirection = shootingDirection
 			.RotateAngleAxis(xRotationOffset, FVector::ForwardVector)
 			.RotateAngleAxis(yRotationOffset, FVector::RightVector)
 			.RotateAngleAxis(zRotationOffset, FVector::UpVector);
 		projectile->InitProjectile(rotatedShootingDirection, Damage, this);
+
+		OnShot_MulticastRPC();
 	}
+
+	
 }
 
 void ATurret::Tick(float DeltaTime)
@@ -254,6 +260,11 @@ void ATurret::ApplyImpulse(FVector Impulse)
 void ATurret::SpawnVisual_MulticastRPC_Implementation(FVector StartLocation, FVector EndLocation)
 {
 	SpawnVisual(StartLocation, EndLocation);
+}
+
+void ATurret::OnShot_MulticastRPC_Implementation()
+{
+	OnShot();
 }
 
 void ATurret::SpawnVisual(FVector StartLocation, FVector EndLocation)

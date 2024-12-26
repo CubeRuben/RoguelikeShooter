@@ -113,6 +113,9 @@ protected:
 
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnShot();
+
 public:	
 
 	virtual void Tick(float DeltaTime) override;
@@ -124,4 +127,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void SpawnVisual_MulticastRPC(FVector StartLocation, FVector EndLocation);
 	void SpawnVisual_MulticastRPC_Implementation(FVector StartLocation, FVector EndLocation);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void OnShot_MulticastRPC();
+	void OnShot_MulticastRPC_Implementation();
 };
